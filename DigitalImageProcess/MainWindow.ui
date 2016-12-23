@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>739</width>
-    <height>400</height>
+    <width>900</width>
+    <height>534</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>739</width>
-    <height>400</height>
+    <width>900</width>
+    <height>500</height>
    </size>
   </property>
   <property name="font">
@@ -33,9 +33,15 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>661</width>
-      <height>351</height>
+      <width>840</width>
+      <height>480</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="lineWidth">
+     <number>0</number>
     </property>
     <property name="widgetResizable">
      <bool>true</bool>
@@ -45,8 +51,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>659</width>
-       <height>349</height>
+       <width>840</width>
+       <height>480</height>
       </rect>
      </property>
     </widget>
@@ -57,7 +63,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>739</width>
+     <width>900</width>
      <height>23</height>
     </rect>
    </property>
@@ -76,7 +82,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="openAction">
    <property name="text">
-    <string>打开(open imageFile)</string>
+    <string>打开(open)</string>
    </property>
    <property name="font">
     <font>
@@ -86,7 +92,7 @@
   </action>
   <action name="saveAction">
    <property name="text">
-    <string>保存(save imae)</string>
+    <string>保存(save)</string>
    </property>
    <property name="font">
     <font>

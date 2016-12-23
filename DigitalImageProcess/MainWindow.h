@@ -24,6 +24,7 @@ public:
 private://申明私有变量
 	Ui::MainWindowClass ui;
 	cv::Mat image;
+	QString imageFilePath;
 	cv::Mat result;
 
 private slots://申明信号函数

@@ -17,6 +17,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -28,6 +29,8 @@ public:
     QAction *openAction;
     QAction *saveAction;
     QWidget *centralWidget;
+    QScrollArea *scrollArea;
+    QWidget *scrollAreaWidgetContents;
     QMenuBar *menuBar;
     QMenu *menu;
     QStatusBar *statusBar;
@@ -36,8 +39,8 @@ public:
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QStringLiteral("MainWindowClass"));
-        MainWindowClass->resize(739, 400);
-        MainWindowClass->setMinimumSize(QSize(739, 400));
+        MainWindowClass->resize(900, 534);
+        MainWindowClass->setMinimumSize(QSize(900, 500));
         QFont font;
         font.setFamily(QStringLiteral("Microsoft YaHei UI"));
         MainWindowClass->setFont(font);
@@ -50,10 +53,20 @@ public:
         saveAction->setFont(font);
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        scrollArea = new QScrollArea(centralWidget);
+        scrollArea->setObjectName(QStringLiteral("scrollArea"));
+        scrollArea->setGeometry(QRect(0, 0, 840, 480));
+        scrollArea->setFrameShape(QFrame::NoFrame);
+        scrollArea->setLineWidth(0);
+        scrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents = new QWidget();
+        scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 840, 480));
+        scrollArea->setWidget(scrollAreaWidgetContents);
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 739, 23));
+        menuBar->setGeometry(QRect(0, 0, 900, 23));
         menuBar->setAutoFillBackground(false);
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
@@ -74,8 +87,8 @@ public:
     void retranslateUi(QMainWindow *MainWindowClass)
     {
         MainWindowClass->setWindowTitle(QApplication::translate("MainWindowClass", "\345\233\276\345\275\242\350\257\206\345\210\253", 0));
-        openAction->setText(QApplication::translate("MainWindowClass", "\346\211\223\345\274\200(open imageFile)", 0));
-        saveAction->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230(save imae)", 0));
+        openAction->setText(QApplication::translate("MainWindowClass", "\346\211\223\345\274\200(open)", 0));
+        saveAction->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230(save)", 0));
         menu->setTitle(QApplication::translate("MainWindowClass", "\346\226\207\344\273\266(File)", 0));
     } // retranslateUi
 

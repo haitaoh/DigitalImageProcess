@@ -31,6 +31,7 @@ void MainWindow::openImage()
 	//调用系统资源管理器，打开文件。
 	QString filePath = QFileDialog::getOpenFileName(this ,tr("Open Image"),".",tr("Image Files (*.jpg *.png)"));
 	if (filePath.length() == 0) return;
+	imageFilePath = filePath;//赋值，为保存文件
 	std::string imagePath = filePath.toStdString();
 	image = cv::imread(imagePath);
 	if(!image.data) return;
@@ -48,14 +49,36 @@ void MainWindow::openImage()
 	QLabel *label = new QLabel(this);
 	label->move(0, 23);
 	label->setPixmap(QPixmap::fromImage(img));
-	label->resize(label->pixmap()->size());
-	label->show();
+	ui.scrollArea->setWidget(label);
+	/*设置窗口最大高度和宽度为840*480*/
+	ui.scrollArea->setMaximumHeight(480);
+	ui.scrollArea->setMaximumWidth(840);
+	ui.scrollArea->resize(label->pixmap()->size());
 }
 
 void MainWindow::saveImage()
 {
-	QString filePath = QFileDialog::getOpenFileName(this, tr("Save Image"), ".", tr("Image Files (*.jpg *.png)"));
-	if (filePath.length() == 0) return;
+	if (imageFilePath.isEmpty()) return;
+	QString suffix = QFileInfo(imageFilePath).suffix();//得到文件后缀
+	QString setFilter = "image(*.jpg *.png)";//设置匹配格式
+	QString dirString, selectFilter;
+	dirString = QFileInfo(imageFilePath).fileName();
+	QString saveFileName = QFileDialog::getSaveFileName(this, "Save Image", dirString, setFilter, &selectFilter,
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	if (saveFileName.isEmpty()) return;
+	if (!suffix.isEmpty() && setFilter.contains(selectFilter))
+		selectFilter = suffix.insert(0, "*.");
+	if (!suffix.isEmpty() && !setFilter.contains(selectFilter))
+		selectFilter = "*.*";
+	QFile file(saveFileName);
+	if (selectFilter.compare("*.*") && QFileInfo(saveFileName).suffix().isEmpty()) saveFileName = saveFileName + selectFilter.remove(0,1);
+	if(!file.copy(imageFilePath,saveFileName))//如果copy不成功
+	{
+		QMessageBox::information(this, "Tips", "save file failed!", QMessageBox::Ok, QMessageBox::Ok);
+	}else
+	{
+		QMessageBox::information(this, "Tips", "save file succeed!", QMessageBox::Ok, QMessageBox::Ok);
+	}
 }
 
 /*
