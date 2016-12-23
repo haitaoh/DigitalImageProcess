@@ -4,6 +4,8 @@ MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+	connect(ui.openAction,SIGNAL(triggered()),this,SLOT(openImage()));
+	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
 }
 
 MainWindow::~MainWindow()
@@ -52,7 +54,8 @@ void MainWindow::openImage()
 
 void MainWindow::saveImage()
 {
-
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Save Image"), ".", tr("Image Files (*.jpg *.png)"));
+	if (filePath.length() == 0) return;
 }
 
 /*

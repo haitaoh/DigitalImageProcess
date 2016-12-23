@@ -27,7 +27,31 @@
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextOnly</enum>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QScrollArea" name="scrollArea">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>661</width>
+      <height>351</height>
+     </rect>
+    </property>
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>659</width>
+       <height>349</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -75,40 +99,7 @@
  <resources>
   <include location="MainWindow.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>menuBar</sender>
-   <signal>triggered(QAction*)</signal>
-   <receiver>MainWindowClass</receiver>
-   <slot>openImage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>30</x>
-     <y>10</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>145</x>
-     <y>187</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>menuBar</sender>
-   <signal>triggered(QAction*)</signal>
-   <receiver>MainWindowClass</receiver>
-   <slot>saveImage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>17</x>
-     <y>17</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>154</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>openImage()</slot>
   <slot>saveImage()</slot>

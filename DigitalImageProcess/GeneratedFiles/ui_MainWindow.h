@@ -67,8 +67,6 @@ public:
         menu->addAction(saveAction);
 
         retranslateUi(MainWindowClass);
-        QObject::connect(menuBar, SIGNAL(triggered(QAction*)), MainWindowClass, SLOT(openImage()));
-        QObject::connect(menuBar, SIGNAL(triggered(QAction*)), MainWindowClass, SLOT(saveImage()));
 
         QMetaObject::connectSlotsByName(MainWindowClass);
     } // setupUi

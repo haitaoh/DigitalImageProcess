@@ -19,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget* parent = Q_NULLPTR);
 	~MainWindow();
+	void houghCircles(cv::Mat& image);
 
 private://申明私有变量
 	Ui::MainWindowClass ui;
@@ -27,6 +28,5 @@ private://申明私有变量
 
 private slots://申明信号函数
 	void openImage();
-	void saveImage();
-	void houghCircles(cv::Mat& image);
+	void saveImage();	
 };
