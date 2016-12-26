@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindowClass</class>
- <widget class="QMainWindow" name="MainWindowClass">
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>926</width>
-    <height>533</height>
+    <height>534</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -16,18 +16,50 @@
     <height>500</height>
    </size>
   </property>
-  <property name="font">
-   <font>
-    <family>Microsoft YaHei UI</family>
-   </font>
-  </property>
   <property name="windowTitle">
    <string>图形识别</string>
   </property>
-  <property name="toolButtonStyle">
-   <enum>Qt::ToolButtonTextOnly</enum>
-  </property>
-  <widget class="QWidget" name="centralWidget">
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>180</y>
+      <width>82</width>
+      <height>141</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="checkBox_2">
+       <property name="text">
+        <string>检测接边</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>检测滚花</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_3">
+       <property name="text">
+        <string>检测底环</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_4">
+       <property name="text">
+        <string>检测底面</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
    <widget class="QScrollArea" name="scrollArea">
     <property name="geometry">
      <rect>
@@ -81,14 +113,14 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QPushButton" name="positiveButton">
+      <widget class="QPushButton" name="pushButton_2">
        <property name="text">
         <string>正面</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="negativeButton">
+      <widget class="QPushButton" name="pushButton_3">
        <property name="text">
         <string>反面</string>
        </property>
@@ -96,55 +128,8 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="verticalLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>840</x>
-      <y>180</y>
-      <width>82</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QCheckBox" name="checkBox_2">
-       <property name="text">
-        <string>检测接边</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox">
-       <property name="text">
-        <string>检测卷口</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_5">
-       <property name="text">
-        <string>检测内壁</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_3">
-       <property name="text">
-        <string>检测底环</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_4">
-       <property name="text">
-        <string>检测底面</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
+  <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -153,10 +138,7 @@
      <height>23</height>
     </rect>
    </property>
-   <property name="autoFillBackground">
-    <bool>false</bool>
-   </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>文件(File)</string>
     </property>
@@ -164,27 +146,17 @@
     <addaction name="saveAction"/>
     <addaction name="closeAction"/>
    </widget>
-   <addaction name="menu"/>
+   <addaction name="menu_File"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusbar"/>
   <action name="openAction">
    <property name="text">
     <string>打开(open)</string>
-   </property>
-   <property name="font">
-    <font>
-     <family>Microsoft YaHei UI</family>
-    </font>
    </property>
   </action>
   <action name="saveAction">
    <property name="text">
     <string>保存(save)</string>
-   </property>
-   <property name="font">
-    <font>
-     <family>Microsoft YaHei UI</family>
-    </font>
    </property>
   </action>
   <action name="closeAction">
@@ -193,13 +165,6 @@
    </property>
   </action>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="MainWindow.qrc"/>
- </resources>
+ <resources/>
  <connections/>
- <slots>
-  <slot>openImage()</slot>
-  <slot>saveImage()</slot>
- </slots>
 </ui>
