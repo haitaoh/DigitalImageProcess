@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget *parent)
 	ui.setupUi(this);
 	connect(ui.openAction,SIGNAL(triggered()),this,SLOT(openImage()));
 	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
+	connect(ui.positiveButton, SIGNAL(clicked()), this, SLOT(positiveButtonClicked()));
+	connect(ui.negativeButton, SIGNAL(clicked()), this, SLOT(negativeButtonClicked()));
 }
 
 MainWindow::~MainWindow()

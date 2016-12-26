@@ -45,8 +45,8 @@ public:
     QLabel *label;
     QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
-    QPushButton *pushButton_2;
-    QPushButton *pushButton_3;
+    QPushButton *positiveButton;
+    QPushButton *negativeButton;
     QMenuBar *menubar;
     QMenu *menu_File;
     QStatusBar *statusbar;
@@ -59,6 +59,9 @@ public:
         mainWindow->setMinimumSize(QSize(900, 500));
         openAction = new QAction(mainWindow);
         openAction->setObjectName(QStringLiteral("openAction"));
+        QFont font;
+        font.setFamily(QStringLiteral("Microsoft YaHei UI"));
+        openAction->setFont(font);
         saveAction = new QAction(mainWindow);
         saveAction->setObjectName(QStringLiteral("saveAction"));
         closeAction = new QAction(mainWindow);
@@ -67,27 +70,31 @@ public:
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayoutWidget_2 = new QWidget(centralwidget);
         verticalLayoutWidget_2->setObjectName(QStringLiteral("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 82, 141));
+        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 82, 151));
         verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         checkBox_2 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setFont(font);
 
         verticalLayout_2->addWidget(checkBox_2);
 
         checkBox = new QCheckBox(verticalLayoutWidget_2);
         checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setFont(font);
 
         verticalLayout_2->addWidget(checkBox);
 
         checkBox_3 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
+        checkBox_3->setFont(font);
 
         verticalLayout_2->addWidget(checkBox_3);
 
         checkBox_4 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
+        checkBox_4->setFont(font);
 
         verticalLayout_2->addWidget(checkBox_4);
 
@@ -103,6 +110,7 @@ public:
         label = new QLabel(scrollAreaWidgetContents);
         label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(0, 0, 841, 311));
+        label->setFont(font);
         scrollArea->setWidget(scrollAreaWidgetContents);
         verticalLayoutWidget = new QWidget(centralwidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
@@ -110,15 +118,17 @@ public:
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        pushButton_2 = new QPushButton(verticalLayoutWidget);
-        pushButton_2->setObjectName(QStringLiteral("pushButton_2"));
+        positiveButton = new QPushButton(verticalLayoutWidget);
+        positiveButton->setObjectName(QStringLiteral("positiveButton"));
+        positiveButton->setFont(font);
 
-        verticalLayout->addWidget(pushButton_2);
+        verticalLayout->addWidget(positiveButton);
 
-        pushButton_3 = new QPushButton(verticalLayoutWidget);
-        pushButton_3->setObjectName(QStringLiteral("pushButton_3"));
+        negativeButton = new QPushButton(verticalLayoutWidget);
+        negativeButton->setObjectName(QStringLiteral("negativeButton"));
+        negativeButton->setFont(font);
 
-        verticalLayout->addWidget(pushButton_3);
+        verticalLayout->addWidget(negativeButton);
 
         mainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(mainWindow);
@@ -152,8 +162,8 @@ public:
         checkBox_3->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\272\225\347\216\257", 0));
         checkBox_4->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\272\225\351\235\242", 0));
         label->setText(QApplication::translate("mainWindow", "showLabel", 0));
-        pushButton_2->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", 0));
-        pushButton_3->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", 0));
+        positiveButton->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", 0));
+        negativeButton->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", 0));
         menu_File->setTitle(QApplication::translate("mainWindow", "\346\226\207\344\273\266(File)", 0));
     } // retranslateUi
 
