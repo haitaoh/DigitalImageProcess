@@ -39,8 +39,8 @@ void MainWindow::openImage()
 	if(!image.data) return;
 	std::clock_t start, end;
 	start = std::clock();
-//	houghCircles(image);
-	findContours(image);
+	houghCircles(image);
+//	findContours(image);
 	end = std::clock();
 	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
 	cv::Scalar scalar(255,122,122);
@@ -94,7 +94,7 @@ void MainWindow::houghCircles(cv::Mat& image)
 	cv::GaussianBlur(imageGray,imageGray,cv::Size(9,9),2,2);//¸ßË¹Ä£ºý£¬½µÔë´¦Àí
 	cv::vector<cv::Vec3f> circles;
 	cv::vector<cv::Vec3f> circles1;
-	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 3, 10, 200, 250, 10, 200);// »ô·òÔ²±ä»»
+	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 2, 10, 200, 250, 10, 200);// »ô·òÔ²±ä»»
 	for(size_t i = 0;i < circles.size();i++)
 	{
 		cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
@@ -110,6 +110,8 @@ void MainWindow::houghCircles(cv::Mat& image)
 		cv::circle(image, center, 3, cv::Scalar(237, 62, 62), -1, 8, 0);//Ô²ÐÄ
 		cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 3, 8, 0);//Ô²±ß
 	}*/
+	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Contours", image);
 }
 
 /*
