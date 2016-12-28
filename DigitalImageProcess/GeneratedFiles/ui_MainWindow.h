@@ -95,6 +95,43 @@ public:
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         positiveButton = new QPushButton(verticalLayoutWidget);
         positiveButton->setObjectName(QStringLiteral("positiveButton"));
+        positiveButton->setStyleSheet(QString::fromUtf8("QPushButton#fileBtn,#helpBtn,#settingBtn{  \n"
+"    border: 1px solid #C0C0C0;  \n"
+"    background-color:#C0C0C0;  \n"
+"    border-style: solid;  \n"
+"    border-radius:0px;  \n"
+"    width: 40px;  //\345\222\214\344\275\240\347\232\204\346\216\247\344\273\266\345\244\247\345\260\217\344\270\200\350\207\264\n"
+"    height:20px;  //\345\222\214\344\275\240\347\232\204\346\216\247\344\273\266\345\244\247\345\260\217\344\270\200\350\207\264\n"
+"    padding:0 0px;  \n"
+"    margin:0 0px;  \n"
+"}  \n"
+"QPushButton#expBtn{  \n"
+"    border: 1px solid #C0C0C0;  \n"
+"    background-color:#FFFFFF;  \n"
+"    border-style: solid;  \n"
+"    border-radius:0px;  \n"
+"    width: 100px;  \n"
+"    height:20px;  \n"
+"    padding:0 0px;  \n"
+"}  \n"
+"QPushButton#fileBtn:hover,#helpBtn:hover,#settingBtn:hover,#expBtn:hover{     \n"
+"    border: 1px solid #E3C46F;  \n"
+"    background-color:#FEF4BF;  \n"
+"    border-style: solid;  \n"
+"    border-radius:2px;  \n"
+"    width: 40px;  \n"
+"    height:20px;  \n"
+"    padding:0 0px;  "
+                        "\n"
+"}  \n"
+"QPushButton#fileBtn:pressed,#helpBtn:pressed,#settingBtn:pressed,#expBtn:pressed{  \n"
+"    background-color:#EAF0FF;  \n"
+"    border: 1px solid #AAB4C4;  \n"
+"    width: 40px;  \n"
+"    height:20px;  \n"
+"    padding:0 0px;  \n"
+"    border-radius:1px;  \n"
+"}"));
 
         verticalLayout->addWidget(positiveButton);
 
