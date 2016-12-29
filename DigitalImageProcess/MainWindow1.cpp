@@ -40,7 +40,7 @@ void MainWindow1::openImage()
 	std::clock_t start, end;
 	start = std::clock();
 	//	houghCircles(image);
-	findContours(image);
+	//findContours(image);
 	end = std::clock();
 	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
 	cv::Scalar scalar(255, 122, 122);

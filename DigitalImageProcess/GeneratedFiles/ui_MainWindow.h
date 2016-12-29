@@ -45,9 +45,6 @@ public:
     QVBoxLayout *verticalLayout_2;
     QCheckBox *checkBox_2;
     QCheckBox *checkBox;
-    QCheckBox *checkBox_5;
-    QCheckBox *checkBox_3;
-    QCheckBox *checkBox_4;
     QMenuBar *menuBar;
     QMenu *menu;
     QStatusBar *statusBar;
@@ -56,8 +53,8 @@ public:
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QStringLiteral("MainWindowClass"));
-        MainWindowClass->resize(926, 533);
-        MainWindowClass->setMinimumSize(QSize(900, 500));
+        MainWindowClass->resize(960, 534);
+        MainWindowClass->setMinimumSize(QSize(960, 534));
         QFont font;
         font.setFamily(QStringLiteral("Microsoft YaHei UI"));
         MainWindowClass->setFont(font);
@@ -75,6 +72,48 @@ public:
         scrollArea = new QScrollArea(centralWidget);
         scrollArea->setObjectName(QStringLiteral("scrollArea"));
         scrollArea->setGeometry(QRect(0, 0, 840, 480));
+        scrollArea->setStyleSheet(QLatin1String("QScrollBar:vertical {\n"
+"background: #E6E6E6;\n"
+"width: 14px;\n"
+"margin: 0px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:vertical {\n"
+"background: #80ef80;\n"
+"min-height: 14px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::add-line:vertical {\n"
+"background: #E6E6E6;\n"
+"height: 0px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::sub-line:vertical {\n"
+"background: #E6E6E6;\n"
+"height: 0px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar:horizontal{\n"
+"background: #E6E6E6;\n"
+"height: 14px;\n"
+"margin: 0px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:horizontal{\n"
+"background: #80ef80;\n"
+"min-width: 14px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::add-line:horizontal{\n"
+"background: #E6E6E6;\n"
+"width: 0px;\n"
+"border-radius: 7px;\n"
+"}\n"
+"QScrollBar::sub-line:horizontal{\n"
+"background: #E6E6E6;\n"
+"width: 0px;\n"
+"border-radius: 7px;\n"
+"}"));
         scrollArea->setFrameShape(QFrame::NoFrame);
         scrollArea->setLineWidth(0);
         scrollArea->setWidgetResizable(true);
@@ -83,11 +122,11 @@ public:
         scrollAreaWidgetContents->setGeometry(QRect(0, 0, 840, 480));
         label = new QLabel(scrollAreaWidgetContents);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(0, 0, 841, 311));
+        label->setGeometry(QRect(0, 0, 171, 61));
         scrollArea->setWidget(scrollAreaWidgetContents);
         verticalLayoutWidget = new QWidget(centralWidget);
         verticalLayoutWidget->setObjectName(QStringLiteral("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(840, 0, 82, 111));
+        verticalLayoutWidget->setGeometry(QRect(840, 0, 111, 131));
         verticalLayout = new QVBoxLayout(verticalLayoutWidget);
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
@@ -95,54 +134,64 @@ public:
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         positiveButton = new QPushButton(verticalLayoutWidget);
         positiveButton->setObjectName(QStringLiteral("positiveButton"));
-        positiveButton->setStyleSheet(QString::fromUtf8("QPushButton#fileBtn,#helpBtn,#settingBtn{  \n"
-"    border: 1px solid #C0C0C0;  \n"
-"    background-color:#C0C0C0;  \n"
-"    border-style: solid;  \n"
-"    border-radius:0px;  \n"
-"    width: 40px;  //\345\222\214\344\275\240\347\232\204\346\216\247\344\273\266\345\244\247\345\260\217\344\270\200\350\207\264\n"
-"    height:20px;  //\345\222\214\344\275\240\347\232\204\346\216\247\344\273\266\345\244\247\345\260\217\344\270\200\350\207\264\n"
-"    padding:0 0px;  \n"
-"    margin:0 0px;  \n"
-"}  \n"
-"QPushButton#expBtn{  \n"
-"    border: 1px solid #C0C0C0;  \n"
-"    background-color:#FFFFFF;  \n"
-"    border-style: solid;  \n"
-"    border-radius:0px;  \n"
-"    width: 100px;  \n"
-"    height:20px;  \n"
-"    padding:0 0px;  \n"
-"}  \n"
-"QPushButton#fileBtn:hover,#helpBtn:hover,#settingBtn:hover,#expBtn:hover{     \n"
-"    border: 1px solid #E3C46F;  \n"
-"    background-color:#FEF4BF;  \n"
-"    border-style: solid;  \n"
-"    border-radius:2px;  \n"
-"    width: 40px;  \n"
-"    height:20px;  \n"
-"    padding:0 0px;  "
-                        "\n"
-"}  \n"
-"QPushButton#fileBtn:pressed,#helpBtn:pressed,#settingBtn:pressed,#expBtn:pressed{  \n"
-"    background-color:#EAF0FF;  \n"
-"    border: 1px solid #AAB4C4;  \n"
-"    width: 40px;  \n"
-"    height:20px;  \n"
-"    padding:0 0px;  \n"
-"    border-radius:1px;  \n"
+        QFont font1;
+        positiveButton->setFont(font1);
+        positiveButton->setStyleSheet(QLatin1String("QPushButton{\n"
+"  padding: 4px 12px;\n"
+"  margin-bottom: 0;\n"
+"  font-size: 20px;\n"
+"  line-height: 20px;\n"
+"  color: #333333;\n"
+"  text-align: center;\n"
+"  vertical-align: middle;\n"
+"  background-color: #3385ff;\n"
+"  background-repeat: repeat-x;\n"
+"  border-color: #2d78f4;\n"
+"  border-bottom-color:#2d78f4;\n"
+"  border-radius: 8px;\n"
+"border-style:inset;\n"
+"}\n"
+"QPushButton:hover{\n"
+"background-color: #438fff;\n"
+"}\n"
+"QPushButton:pressed{\n"
+"  background-color: #4eda64;\n"
+"border-style:outset;\n"
 "}"));
 
         verticalLayout->addWidget(positiveButton);
 
         negativeButton = new QPushButton(verticalLayoutWidget);
         negativeButton->setObjectName(QStringLiteral("negativeButton"));
+        negativeButton->setFont(font1);
+        negativeButton->setStyleSheet(QLatin1String("QPushButton{\n"
+"  padding: 4px 12px;\n"
+"  margin-bottom: 0;\n"
+"  font-size: 20px;\n"
+"  line-height: 20px;\n"
+"  color: #333333;\n"
+"  text-align: center;\n"
+"  vertical-align: middle;\n"
+"  background-color: #3385ff;\n"
+"  background-repeat: repeat-x;\n"
+"  border-color: #2d78f4;\n"
+"  border-bottom-color:#2d78f4;\n"
+"  border-radius: 8px;\n"
+"border-style:inset;\n"
+"}\n"
+"QPushButton:hover{\n"
+"background-color: #438fff;\n"
+"}\n"
+"QPushButton:pressed{\n"
+"  background-color: #4eda64;\n"
+"border-style:outset;\n"
+"}"));
 
         verticalLayout->addWidget(negativeButton);
 
         verticalLayoutWidget_2 = new QWidget(centralWidget);
         verticalLayoutWidget_2->setObjectName(QStringLiteral("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 82, 181));
+        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 111, 61));
         verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -150,33 +199,50 @@ public:
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         checkBox_2 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
+        checkBox_2->setFont(font);
+        checkBox_2->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+"	font-size:18px;\n"
+"}\n"
+"QCheckBox::indicator { \n"
+"    width: 26px;\n"
+"    height: 50px;\n"
+"}\n"
+"/*\346\234\252\351\200\211\344\270\255*/\n"
+"QCheckBox::indicator::unchecked {   \n"
+"    image: url(images/unchecked.png);\n"
+"}\n"
+"/*\351\200\211\344\270\255*/\n"
+"QCheckBox::indicator::checked { \n"
+"    image: url(images/checked.png);\n"
+"}"));
 
         verticalLayout_2->addWidget(checkBox_2);
 
         checkBox = new QCheckBox(verticalLayoutWidget_2);
         checkBox->setObjectName(QStringLiteral("checkBox"));
+        checkBox->setFont(font);
+        checkBox->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+"	font-size:18px;\n"
+"}\n"
+"QCheckBox::indicator { \n"
+"    width: 26px;\n"
+"    height: 50px;\n"
+"}\n"
+"/*\346\234\252\351\200\211\344\270\255*/\n"
+"QCheckBox::indicator::unchecked {   \n"
+"    image: url(images/unchecked.png);\n"
+"}\n"
+"/*\351\200\211\344\270\255*/\n"
+"QCheckBox::indicator::checked { \n"
+"    image: url(images/checked.png);\n"
+"}"));
 
         verticalLayout_2->addWidget(checkBox);
-
-        checkBox_5 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_5->setObjectName(QStringLiteral("checkBox_5"));
-
-        verticalLayout_2->addWidget(checkBox_5);
-
-        checkBox_3 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_3->setObjectName(QStringLiteral("checkBox_3"));
-
-        verticalLayout_2->addWidget(checkBox_3);
-
-        checkBox_4 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
-
-        verticalLayout_2->addWidget(checkBox_4);
 
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 926, 23));
+        menuBar->setGeometry(QRect(0, 0, 960, 23));
         menuBar->setAutoFillBackground(false);
         menu = new QMenu(menuBar);
         menu->setObjectName(QStringLiteral("menu"));
@@ -201,14 +267,11 @@ public:
         openAction->setText(QApplication::translate("MainWindowClass", "\346\211\223\345\274\200(open)", 0));
         saveAction->setText(QApplication::translate("MainWindowClass", "\344\277\235\345\255\230(save)", 0));
         closeAction->setText(QApplication::translate("MainWindowClass", "\345\205\263\351\227\255(close)", 0));
-        label->setText(QApplication::translate("MainWindowClass", "showLabel", 0));
+        label->setText(QString());
         positiveButton->setText(QApplication::translate("MainWindowClass", "\346\255\243\351\235\242", 0));
         negativeButton->setText(QApplication::translate("MainWindowClass", "\345\217\215\351\235\242", 0));
         checkBox_2->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
-        checkBox->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\215\267\345\217\243", 0));
-        checkBox_5->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\206\205\345\243\201", 0));
-        checkBox_3->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\272\225\347\216\257", 0));
-        checkBox_4->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\272\225\351\235\242", 0));
+        checkBox->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\234\206", 0));
         menu->setTitle(QApplication::translate("MainWindowClass", "\346\226\207\344\273\266(File)", 0));
     } // retranslateUi
 

@@ -22,12 +22,14 @@ public:
 	std::string longToString(long l);
 	void houghCircles(cv::Mat& image);
 	void findContours(cv::Mat& image);
+	void showImage(cv::Mat& image);
 
 private://申明私有变量
 	Ui::MainWindowClass ui;
 	cv::Mat image;
 	QString imageFilePath;
 	cv::Mat result;
+	QLabel *label;
 
 private slots://申明槽函数
 	void openImage();

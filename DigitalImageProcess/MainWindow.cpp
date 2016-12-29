@@ -8,16 +8,12 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
 	connect(ui.positiveButton, SIGNAL(clicked()), this, SLOT(positiveButtonClicked()));
 	connect(ui.negativeButton, SIGNAL(clicked()), this, SLOT(negativeButtonClicked()));
-	ui.positiveButton->setStyleSheet("QToolButton{min - width:80px;min - height:32px;}"
-		"QToolButton{color:rgb(255, 255, 255);min - height:20;border - style:solid;border - top - left - radius:2px;border - top - right - radius:2px;background: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1, stop : 0 rgb(226,236,241),stop : 0.3 rgb(160,160,160),stop : 1 rgb(140,140,140));border:1px;border - radius:5px; padding:2px 4px;/*border-radius控制圆角大小*/}"
-		"QToolButton:hover{  /*鼠标放上后*/color:rgb(255, 255, 255);min - height:20;border - style:solid;border - top - left - radius:2px;border - top - right - radius:2px;background: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1, stop : 0 rgb(226,236,241),stop : 0.3 rgb(160,160,160),stop : 1 rgb(120,120,120));border:1px;border - radius:5px; padding:2px 4px;}"
-		"QToolButton:pressed{ /*按下按钮后*/color:rgb(255, 255, 255);min - height:20;border - style:solid;border - top - std::left - radius:2px;border - top - right - radius:2px;background: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1, stop : 0 rgb(226,236,241),stop : 0.3 rgb(190,190,190),stop : 1 rgb(160,160,160));border:1px;border - radius:5px; padding:2px 4px;}"
-		"QToolButton:checked{    /*选中后*/color:rgb(255, 255, 255);min - height:20;border - style:solid;border - top - left - radius:2px;border - top - right - radius:2px;background: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1, stop : 0 rgb(226,236,241),stop : 0.3 rgb(190,190,190),stop : 1 rgb(160,160,160));border:1px;border - radius:5px; padding:2px 4px;}");
+	label = 0;
 }
 
 MainWindow::~MainWindow()
 {
-	
+	if (label) delete label;
 }
 
 /*
@@ -33,6 +29,79 @@ std::string MainWindow::longToString(long l)
 	return result;
 }
 
+
+
+/*
+* 霍夫圆变换
+*/
+void MainWindow::houghCircles(cv::Mat& image)
+{
+	cv::Mat imageGray;
+	cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
+	int centerRadius = 3;
+	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
+	cv::GaussianBlur(imageGray, imageGray, cv::Size(9, 9), 2, 2);//高斯模糊，降噪处理
+	cv::vector<cv::Vec3f> circles;
+	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 2, 10, 200, 250, 10, 200);// 霍夫圆变换
+	/* HoughCircles在mian函数中单独跑会出错，原因是:                *\
+	\* 下面的框架可能不正确和/或缺失，没有为 ucrtbased.dll 加载符号 */
+	for (int i = 0; i < circles.size(); i++)
+	{
+		cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));//debug模式下这行会出错
+		int radius = cvRound(circles[i][2]);//debug模式下这行会出错
+		cv::circle(image, center, centerRadius, centerScalar, -1, 8, 0);//圆心
+		cv::circle(image, center, radius, radiusScalar, 1, 8, 0);//圆边
+	}
+	/*调试窗口*/
+	/*cv::namedWindow("ImageShow", CV_WINDOW_AUTOSIZE);
+	cv::imshow("ImageShow", image);*/
+}
+
+/*
+* 寻找轮廓
+*/
+void MainWindow::findContours(cv::Mat& image)
+{
+	cv::Mat image_gray, canny_output;
+	cv::cvtColor(image, image_gray, CV_BGR2GRAY);//转换成灰度图 
+	cv::blur(image_gray, image_gray, cv::Size(3, 3));//模糊降噪
+	cv::vector<cv::vector<cv::Point>> contours;
+	cv::vector<cv::Vec4i> hierarchy;
+	cv::Canny(image_gray, canny_output, 100, 300);//用canny算子检测边缘
+	cv::findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//寻找轮廓
+	cv::Mat drawing = cv::Mat::zeros(canny_output.size(), CV_8UC3);
+	for (int i = 0; i < contours.size(); i++)
+	{
+		cv::drawContours(drawing, contours, i, cv::Scalar(0, 0, 255), 2, 8, hierarchy, 0, cv::Point());
+	}
+	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
+	imshow("Contours", drawing);
+}
+
+/*
+ * 显示图片
+ */
+void MainWindow::showImage(cv::Mat& image)
+{
+	cv::cvtColor(image, image, CV_RGB2RGBA);//图像在qt显示，必须先转换
+	QImage img = QImage((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB32);
+	if (label)//原指针有对象，删除对象
+	{
+		delete label;
+		label = 0;//空指针，防止访问异常
+	}
+	label = new QLabel();
+	label->setPixmap(QPixmap::fromImage(img));
+	ui.scrollArea->setWidget(label);
+	/*设置窗口最大高度和宽度为830*480*/
+	ui.scrollArea->setMaximumHeight(480);
+	ui.scrollArea->setMaximumWidth(830);
+	ui.scrollArea->resize(label->pixmap()->size());
+}
+
+/*
+ * 打开图片
+ */
 void MainWindow::openImage()
 {
 	//调用系统资源管理器，打开文件。
@@ -50,20 +119,12 @@ void MainWindow::openImage()
 	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
 	cv::Scalar scalar(255,122,122);
 	cv::putText(image, printMessage, cv::Point(0, image.cols/2), 1, 1.0, scalar, 1);
-	/*cv::namedWindow("Hough Circle", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Hough Circle", image);*/
-	cv::cvtColor(image, image, CV_RGB2RGBA);//图像在qt显示，必须先转换
-	QImage img = QImage((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB32);
-	QLabel *label = new QLabel(this);
-	label->move(0, 23);
-	label->setPixmap(QPixmap::fromImage(img));
-	ui.scrollArea->setWidget(label);
-	/*设置窗口最大高度和宽度为840*480*/
-	ui.scrollArea->setMaximumHeight(480);
-	ui.scrollArea->setMaximumWidth(840);
-	ui.scrollArea->resize(label->pixmap()->size());
+	showImage(image);
 }
 
+/*
+ * 保存图片
+ */
 void MainWindow::saveImage()
 {
 	if (imageFilePath.isEmpty()) return;
@@ -90,66 +151,24 @@ void MainWindow::saveImage()
 }
 
 /*
- * 霍夫圆变换
+ * 显示窗口
  */
-void MainWindow::houghCircles(cv::Mat& image)
-{
-	cv::Mat imageGray;
-	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
-	cv::GaussianBlur(imageGray,imageGray,cv::Size(9,9),2,2);//高斯模糊，降噪处理
-	cv::vector<cv::Vec3f> circles;
-	cv::vector<cv::Vec3f> circles1;
-	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 2, 10, 200, 250, 10, 200);// 霍夫圆变换
-	for(size_t i = 0;i < circles.size();i++)
-	{
-		cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		int radius = cvRound(circles[i][2]);
-		cv::circle(image, center, 3, cv::Scalar(237,62,62), -1, 8, 0);//圆心
-		cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 3, 8, 0);//圆边
-	}
-	/*cv::HoughCircles(imageGray, circles1, CV_HOUGH_GRADIENT, 2.9, 300, 200, 120, 10, 100);// 霍夫圆变换
-	for (size_t i = 0; i < circles1.size(); i++)
-	{
-		cv::Point center(cvRound(circles1[i][0]), cvRound(circles1[i][1]));
-		int radius = cvRound(circles1[i][2]);
-		cv::circle(image, center, 3, cv::Scalar(237, 62, 62), -1, 8, 0);//圆心
-		cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 3, 8, 0);//圆边
-	}*/
-	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Contours", image);
-}
-
-/*
- * 寻找轮廓
- */
-void MainWindow::findContours(cv::Mat& image)
-{
-	cv::Mat image_gray,canny_output;
-	cv::cvtColor(image, image_gray, CV_BGR2GRAY);//转换成灰度图 
-	cv::blur(image_gray, image_gray, cv::Size(3, 3));//模糊降噪
-	cv::vector<cv::vector<cv::Point>> contours;
-	cv::vector<cv::Vec4i> hierarchy;
-	cv::Canny(image_gray, canny_output, 100, 300);//用canny算子检测边缘
-	cv::findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//寻找轮廓
-	cv::Mat drawing = cv::Mat::zeros(canny_output.size(), CV_8UC3);
-	for(int i = 0;i < contours.size();i++)
-	{
-		cv::drawContours(drawing, contours, i, cv::Scalar(0, 0, 255), 2, 8, hierarchy, 0, cv::Point());
-	}
-	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-	imshow("Contours", drawing);
-}
-
 void MainWindow::showWindow()
 {
 	this->show();
 }
 
+/*
+ * 正面按钮被点击
+ */
 void MainWindow::positiveButtonClicked()
 {
 	//do nothing
 }
 
+/*
+ * 反面按钮被点击
+ */
 void MainWindow::negativeButtonClicked()
 {
 	this->hide();
