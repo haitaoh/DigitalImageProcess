@@ -34,12 +34,14 @@
       <widget class="QCheckBox" name="checkBox_2">
        <property name="font">
         <font>
+         <family>Microsoft YaHei UI</family>
          <pointsize>-1</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">QCheckBox{
 	font-size:18px;
+font-family:Microsoft YaHei UI;
 }
 QCheckBox::indicator { 
     width: 26px;
@@ -63,12 +65,14 @@ QCheckBox::indicator::checked {
       <widget class="QCheckBox" name="checkBox">
        <property name="font">
         <font>
+         <family>Microsoft YaHei UI</family>
          <pointsize>-1</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">QCheckBox{
 	font-size:18px;
+font-family:Microsoft YaHei UI;
 }
 QCheckBox::indicator { 
     width: 26px;
@@ -92,12 +96,14 @@ QCheckBox::indicator::checked {
       <widget class="QCheckBox" name="checkBox_4">
        <property name="font">
         <font>
+         <family>Microsoft YaHei UI</family>
          <pointsize>-1</pointsize>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">QCheckBox{
 	font-size:18px;
+font-family:Microsoft YaHei UI;
 }
 QCheckBox::indicator { 
     width: 26px;
@@ -261,6 +267,7 @@ border-style:outset;
       <widget class="QPushButton" name="negativeButton">
        <property name="font">
         <font>
+         <family>Microsoft YaHei UI</family>
          <pointsize>-1</pointsize>
         </font>
        </property>
@@ -279,6 +286,7 @@ border-style:outset;
   border-bottom-color:#2d78f4;
   border-radius: 8px;
 border-style:inset;
+	font-family:Microsoft YaHei UI;
 }
 QPushButton:hover{
 background-color: #438fff;

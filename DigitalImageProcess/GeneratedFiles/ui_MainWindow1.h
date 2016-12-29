@@ -75,10 +75,10 @@ public:
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         checkBox_2 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
-        QFont font1;
-        checkBox_2->setFont(font1);
+        checkBox_2->setFont(font);
         checkBox_2->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
 "	font-size:18px;\n"
+"font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QCheckBox::indicator { \n"
 "    width: 26px;\n"
@@ -97,9 +97,10 @@ public:
 
         checkBox = new QCheckBox(verticalLayoutWidget_2);
         checkBox->setObjectName(QStringLiteral("checkBox"));
-        checkBox->setFont(font1);
+        checkBox->setFont(font);
         checkBox->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
 "	font-size:18px;\n"
+"font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QCheckBox::indicator { \n"
 "    width: 26px;\n"
@@ -118,9 +119,10 @@ public:
 
         checkBox_4 = new QCheckBox(verticalLayoutWidget_2);
         checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
-        checkBox_4->setFont(font1);
+        checkBox_4->setFont(font);
         checkBox_4->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
 "	font-size:18px;\n"
+"font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QCheckBox::indicator { \n"
 "    width: 26px;\n"
@@ -229,7 +231,7 @@ public:
 
         negativeButton = new QPushButton(verticalLayoutWidget);
         negativeButton->setObjectName(QStringLiteral("negativeButton"));
-        negativeButton->setFont(font1);
+        negativeButton->setFont(font);
         negativeButton->setStyleSheet(QLatin1String("QPushButton{\n"
 "  padding: 4px 12px;\n"
 "  margin-bottom: 0;\n"
@@ -244,6 +246,7 @@ public:
 "  border-bottom-color:#2d78f4;\n"
 "  border-radius: 8px;\n"
 "border-style:inset;\n"
+"	font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QPushButton:hover{\n"
 "background-color: #438fff;\n"
