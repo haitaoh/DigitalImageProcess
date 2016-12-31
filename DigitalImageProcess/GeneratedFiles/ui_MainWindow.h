@@ -43,8 +43,8 @@ public:
     QPushButton *negativeButton;
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *verticalLayout_2;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox;
+    QCheckBox *checkBox1;
+    QCheckBox *checkBox2;
     QMenuBar *menuBar;
     QMenu *menu;
     QStatusBar *statusBar;
@@ -79,9 +79,12 @@ public:
 "border-radius: 7px;\n"
 "}\n"
 "QScrollBar::handle:vertical {\n"
-"background: #80ef80;\n"
+"background: #cfcfcf;\n"
 "min-height: 14px;\n"
 "border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:pressed{\n"
+"background:#a0a0a0;\n"
 "}\n"
 "QScrollBar::add-line:vertical {\n"
 "background: #E6E6E6;\n"
@@ -100,9 +103,12 @@ public:
 "border-radius: 7px;\n"
 "}\n"
 "QScrollBar::handle:horizontal{\n"
-"background: #80ef80;\n"
+"background: #cfcfcf;\n"
 "min-width: 14px;\n"
 "border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:pressed{\n"
+"background:#a0a0a0;\n"
 "}\n"
 "QScrollBar::add-line:horizontal{\n"
 "background: #E6E6E6;\n"
@@ -134,28 +140,28 @@ public:
         verticalLayout->setContentsMargins(0, 0, 0, 0);
         positiveButton = new QPushButton(verticalLayoutWidget);
         positiveButton->setObjectName(QStringLiteral("positiveButton"));
-        QFont font1;
-        positiveButton->setFont(font1);
+        positiveButton->setFont(font);
         positiveButton->setStyleSheet(QLatin1String("QPushButton{\n"
 "  padding: 4px 12px;\n"
 "  margin-bottom: 0;\n"
 "  font-size: 20px;\n"
+"  font-family:Microsoft YaHei UI;\n"
 "  line-height: 20px;\n"
 "  color: #333333;\n"
 "  text-align: center;\n"
 "  vertical-align: middle;\n"
-"  background-color: #3385ff;\n"
+"  background-color: #cfcfcf;\n"
 "  background-repeat: repeat-x;\n"
-"  border-color: #2d78f4;\n"
-"  border-bottom-color:#2d78f4;\n"
+"  border-color: #cfcfcf;\n"
+"  border-bottom-color:#cfcfcf;\n"
 "  border-radius: 8px;\n"
 "border-style:inset;\n"
 "}\n"
 "QPushButton:hover{\n"
-"background-color: #438fff;\n"
+"background-color: #a0a0a0;\n"
 "}\n"
 "QPushButton:pressed{\n"
-"  background-color: #4eda64;\n"
+"  background-color: #888888;\n"
 "border-style:outset;\n"
 "}"));
 
@@ -163,27 +169,28 @@ public:
 
         negativeButton = new QPushButton(verticalLayoutWidget);
         negativeButton->setObjectName(QStringLiteral("negativeButton"));
-        negativeButton->setFont(font1);
+        negativeButton->setFont(font);
         negativeButton->setStyleSheet(QLatin1String("QPushButton{\n"
 "  padding: 4px 12px;\n"
 "  margin-bottom: 0;\n"
 "  font-size: 20px;\n"
+"  font-family:Microsoft YaHei UI;\n"
 "  line-height: 20px;\n"
 "  color: #333333;\n"
 "  text-align: center;\n"
 "  vertical-align: middle;\n"
-"  background-color: #3385ff;\n"
+"  background-color: #cfcfcf;\n"
 "  background-repeat: repeat-x;\n"
-"  border-color: #2d78f4;\n"
-"  border-bottom-color:#2d78f4;\n"
+"  border-color: #cfcfcf;\n"
+"  border-bottom-color:#cfcfcf;\n"
 "  border-radius: 8px;\n"
 "border-style:inset;\n"
 "}\n"
 "QPushButton:hover{\n"
-"background-color: #438fff;\n"
+"background-color: #a0a0a0;\n"
 "}\n"
 "QPushButton:pressed{\n"
-"  background-color: #4eda64;\n"
+"  background-color: #888888;\n"
 "border-style:outset;\n"
 "}"));
 
@@ -191,53 +198,51 @@ public:
 
         verticalLayoutWidget_2 = new QWidget(centralWidget);
         verticalLayoutWidget_2->setObjectName(QStringLiteral("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 111, 61));
+        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 112, 108));
         verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        checkBox_2 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
-        checkBox_2->setFont(font);
-        checkBox_2->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+        checkBox1 = new QCheckBox(verticalLayoutWidget_2);
+        checkBox1->setObjectName(QStringLiteral("checkBox1"));
+        checkBox1->setFont(font);
+        checkBox1->setStyleSheet(QLatin1String("QCheckBox{\n"
 "	font-size:18px;\n"
+"font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QCheckBox::indicator { \n"
 "    width: 26px;\n"
 "    height: 50px;\n"
 "}\n"
-"/*\346\234\252\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::unchecked {   \n"
 "    image: url(images/unchecked.png);\n"
 "}\n"
-"/*\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::checked { \n"
 "    image: url(images/checked.png);\n"
 "}"));
 
-        verticalLayout_2->addWidget(checkBox_2);
+        verticalLayout_2->addWidget(checkBox1);
 
-        checkBox = new QCheckBox(verticalLayoutWidget_2);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-        checkBox->setFont(font);
-        checkBox->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+        checkBox2 = new QCheckBox(verticalLayoutWidget_2);
+        checkBox2->setObjectName(QStringLiteral("checkBox2"));
+        checkBox2->setFont(font);
+        checkBox2->setStyleSheet(QLatin1String("QCheckBox{\n"
 "	font-size:18px;\n"
+"font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QCheckBox::indicator { \n"
 "    width: 26px;\n"
 "    height: 50px;\n"
 "}\n"
-"/*\346\234\252\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::unchecked {   \n"
 "    image: url(images/unchecked.png);\n"
 "}\n"
-"/*\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::checked { \n"
 "    image: url(images/checked.png);\n"
 "}"));
 
-        verticalLayout_2->addWidget(checkBox);
+        verticalLayout_2->addWidget(checkBox2);
 
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
@@ -270,8 +275,8 @@ public:
         label->setText(QString());
         positiveButton->setText(QApplication::translate("MainWindowClass", "\346\255\243\351\235\242", 0));
         negativeButton->setText(QApplication::translate("MainWindowClass", "\345\217\215\351\235\242", 0));
-        checkBox_2->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
-        checkBox->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\234\206", 0));
+        checkBox1->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\234\206", 0));
+        checkBox2->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
         menu->setTitle(QApplication::translate("MainWindowClass", "\346\226\207\344\273\266(File)", 0));
     } // retranslateUi
 

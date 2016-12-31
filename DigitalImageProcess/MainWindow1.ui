@@ -25,13 +25,13 @@
      <rect>
       <x>840</x>
       <y>180</y>
-      <width>111</width>
-      <height>91</height>
+      <width>112</width>
+      <height>164</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QCheckBox" name="checkBox_2">
+      <widget class="QCheckBox" name="checkBox1">
        <property name="font">
         <font>
          <family>Microsoft YaHei UI</family>
@@ -47,11 +47,38 @@ QCheckBox::indicator {
     width: 26px;
     height: 50px;
 }
-/*未选中*/
 QCheckBox::indicator::unchecked {   
     image: url(images/unchecked.png);
 }
-/*选中*/
+QCheckBox::indicator::checked { 
+    image: url(images/checked.png);
+}</string>
+       </property>
+       <property name="text">
+        <string>检测圆</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox2">
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei UI</family>
+         <pointsize>-1</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QCheckBox{
+	font-size:18px;
+font-family:Microsoft YaHei UI;
+}
+QCheckBox::indicator { 
+    width: 26px;
+    height: 50px;
+}
+QCheckBox::indicator::unchecked {   
+    image: url(images/unchecked.png);
+}
 QCheckBox::indicator::checked { 
     image: url(images/checked.png);
 }</string>
@@ -62,7 +89,7 @@ QCheckBox::indicator::checked {
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="checkBox3">
        <property name="font">
         <font>
          <family>Microsoft YaHei UI</family>
@@ -78,48 +105,15 @@ QCheckBox::indicator {
     width: 26px;
     height: 50px;
 }
-/*未选中*/
 QCheckBox::indicator::unchecked {   
     image: url(images/unchecked.png);
 }
-/*选中*/
 QCheckBox::indicator::checked { 
     image: url(images/checked.png);
 }</string>
        </property>
        <property name="text">
         <string>检测滚花</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_4">
-       <property name="font">
-        <font>
-         <family>Microsoft YaHei UI</family>
-         <pointsize>-1</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QCheckBox{
-	font-size:18px;
-font-family:Microsoft YaHei UI;
-}
-QCheckBox::indicator { 
-    width: 26px;
-    height: 50px;
-}
-/*未选中*/
-QCheckBox::indicator::unchecked {   
-    image: url(images/unchecked.png);
-}
-/*选中*/
-QCheckBox::indicator::checked { 
-    image: url(images/checked.png);
-}</string>
-       </property>
-       <property name="text">
-        <string>检测圆</string>
        </property>
       </widget>
      </item>
@@ -142,9 +136,12 @@ margin: 0px;
 border-radius: 7px;
 }
 QScrollBar::handle:vertical {
-background: #80ef80;
+background: #cfcfcf;
 min-height: 14px;
 border-radius: 7px;
+}
+QScrollBar::handle:pressed{
+background:#a0a0a0;
 }
 QScrollBar::add-line:vertical {
 background: #E6E6E6;
@@ -163,9 +160,12 @@ margin: 0px;
 border-radius: 7px;
 }
 QScrollBar::handle:horizontal{
-background: #80ef80;
+background: #cfcfcf;
 min-width: 14px;
 border-radius: 7px;
+}
+QScrollBar::handle:pressed{
+background:#a0a0a0;
 }
 QScrollBar::add-line:horizontal{
 background: #E6E6E6;
@@ -239,22 +239,23 @@ border-radius: 7px;
   padding: 4px 12px;
   margin-bottom: 0;
   font-size: 20px;
+  font-family:Microsoft YaHei UI;
   line-height: 20px;
   color: #333333;
   text-align: center;
   vertical-align: middle;
-  background-color: #3385ff;
+  background-color: #cfcfcf;
   background-repeat: repeat-x;
-  border-color: #2d78f4;
-  border-bottom-color:#2d78f4;
+  border-color: #cfcfcf;
+  border-bottom-color:#cfcfcf;
   border-radius: 8px;
 border-style:inset;
 }
 QPushButton:hover{
-background-color: #438fff;
+background-color: #a0a0a0;
 }
 QPushButton:pressed{
-  background-color: #4eda64;
+  background-color: #888888;
 border-style:outset;
 }</string>
        </property>
@@ -276,23 +277,23 @@ border-style:outset;
   padding: 4px 12px;
   margin-bottom: 0;
   font-size: 20px;
+  font-family:Microsoft YaHei UI;
   line-height: 20px;
   color: #333333;
   text-align: center;
   vertical-align: middle;
-  background-color: #3385ff;
+  background-color: #cfcfcf;
   background-repeat: repeat-x;
-  border-color: #2d78f4;
-  border-bottom-color:#2d78f4;
+  border-color: #cfcfcf;
+  border-bottom-color:#cfcfcf;
   border-radius: 8px;
 border-style:inset;
-	font-family:Microsoft YaHei UI;
 }
 QPushButton:hover{
-background-color: #438fff;
+background-color: #a0a0a0;
 }
 QPushButton:pressed{
-  background-color: #4eda64;
+  background-color: #888888;
 border-style:outset;
 }</string>
        </property>

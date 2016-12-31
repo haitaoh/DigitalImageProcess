@@ -36,9 +36,9 @@ public:
     QWidget *centralwidget;
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *verticalLayout_2;
-    QCheckBox *checkBox_2;
-    QCheckBox *checkBox;
-    QCheckBox *checkBox_4;
+    QCheckBox *checkBox1;
+    QCheckBox *checkBox2;
+    QCheckBox *checkBox3;
     QScrollArea *scrollArea;
     QWidget *scrollAreaWidgetContents;
     QLabel *label;
@@ -69,14 +69,14 @@ public:
         centralwidget->setObjectName(QStringLiteral("centralwidget"));
         verticalLayoutWidget_2 = new QWidget(centralwidget);
         verticalLayoutWidget_2->setObjectName(QStringLiteral("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 111, 91));
+        verticalLayoutWidget_2->setGeometry(QRect(840, 180, 112, 164));
         verticalLayout_2 = new QVBoxLayout(verticalLayoutWidget_2);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        checkBox_2 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_2->setObjectName(QStringLiteral("checkBox_2"));
-        checkBox_2->setFont(font);
-        checkBox_2->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+        checkBox1 = new QCheckBox(verticalLayoutWidget_2);
+        checkBox1->setObjectName(QStringLiteral("checkBox1"));
+        checkBox1->setFont(font);
+        checkBox1->setStyleSheet(QLatin1String("QCheckBox{\n"
 "	font-size:18px;\n"
 "font-family:Microsoft YaHei UI;\n"
 "}\n"
@@ -84,21 +84,19 @@ public:
 "    width: 26px;\n"
 "    height: 50px;\n"
 "}\n"
-"/*\346\234\252\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::unchecked {   \n"
 "    image: url(images/unchecked.png);\n"
 "}\n"
-"/*\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::checked { \n"
 "    image: url(images/checked.png);\n"
 "}"));
 
-        verticalLayout_2->addWidget(checkBox_2);
+        verticalLayout_2->addWidget(checkBox1);
 
-        checkBox = new QCheckBox(verticalLayoutWidget_2);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-        checkBox->setFont(font);
-        checkBox->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+        checkBox2 = new QCheckBox(verticalLayoutWidget_2);
+        checkBox2->setObjectName(QStringLiteral("checkBox2"));
+        checkBox2->setFont(font);
+        checkBox2->setStyleSheet(QLatin1String("QCheckBox{\n"
 "	font-size:18px;\n"
 "font-family:Microsoft YaHei UI;\n"
 "}\n"
@@ -106,21 +104,19 @@ public:
 "    width: 26px;\n"
 "    height: 50px;\n"
 "}\n"
-"/*\346\234\252\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::unchecked {   \n"
 "    image: url(images/unchecked.png);\n"
 "}\n"
-"/*\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::checked { \n"
 "    image: url(images/checked.png);\n"
 "}"));
 
-        verticalLayout_2->addWidget(checkBox);
+        verticalLayout_2->addWidget(checkBox2);
 
-        checkBox_4 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox_4->setObjectName(QStringLiteral("checkBox_4"));
-        checkBox_4->setFont(font);
-        checkBox_4->setStyleSheet(QString::fromUtf8("QCheckBox{\n"
+        checkBox3 = new QCheckBox(verticalLayoutWidget_2);
+        checkBox3->setObjectName(QStringLiteral("checkBox3"));
+        checkBox3->setFont(font);
+        checkBox3->setStyleSheet(QLatin1String("QCheckBox{\n"
 "	font-size:18px;\n"
 "font-family:Microsoft YaHei UI;\n"
 "}\n"
@@ -128,16 +124,14 @@ public:
 "    width: 26px;\n"
 "    height: 50px;\n"
 "}\n"
-"/*\346\234\252\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::unchecked {   \n"
 "    image: url(images/unchecked.png);\n"
 "}\n"
-"/*\351\200\211\344\270\255*/\n"
 "QCheckBox::indicator::checked { \n"
 "    image: url(images/checked.png);\n"
 "}"));
 
-        verticalLayout_2->addWidget(checkBox_4);
+        verticalLayout_2->addWidget(checkBox3);
 
         scrollArea = new QScrollArea(centralwidget);
         scrollArea->setObjectName(QStringLiteral("scrollArea"));
@@ -149,9 +143,12 @@ public:
 "border-radius: 7px;\n"
 "}\n"
 "QScrollBar::handle:vertical {\n"
-"background: #80ef80;\n"
+"background: #cfcfcf;\n"
 "min-height: 14px;\n"
 "border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:pressed{\n"
+"background:#a0a0a0;\n"
 "}\n"
 "QScrollBar::add-line:vertical {\n"
 "background: #E6E6E6;\n"
@@ -170,9 +167,12 @@ public:
 "border-radius: 7px;\n"
 "}\n"
 "QScrollBar::handle:horizontal{\n"
-"background: #80ef80;\n"
+"background: #cfcfcf;\n"
 "min-width: 14px;\n"
 "border-radius: 7px;\n"
+"}\n"
+"QScrollBar::handle:pressed{\n"
+"background:#a0a0a0;\n"
 "}\n"
 "QScrollBar::add-line:horizontal{\n"
 "background: #E6E6E6;\n"
@@ -208,22 +208,23 @@ public:
 "  padding: 4px 12px;\n"
 "  margin-bottom: 0;\n"
 "  font-size: 20px;\n"
+"  font-family:Microsoft YaHei UI;\n"
 "  line-height: 20px;\n"
 "  color: #333333;\n"
 "  text-align: center;\n"
 "  vertical-align: middle;\n"
-"  background-color: #3385ff;\n"
+"  background-color: #cfcfcf;\n"
 "  background-repeat: repeat-x;\n"
-"  border-color: #2d78f4;\n"
-"  border-bottom-color:#2d78f4;\n"
+"  border-color: #cfcfcf;\n"
+"  border-bottom-color:#cfcfcf;\n"
 "  border-radius: 8px;\n"
 "border-style:inset;\n"
 "}\n"
 "QPushButton:hover{\n"
-"background-color: #438fff;\n"
+"background-color: #a0a0a0;\n"
 "}\n"
 "QPushButton:pressed{\n"
-"  background-color: #4eda64;\n"
+"  background-color: #888888;\n"
 "border-style:outset;\n"
 "}"));
 
@@ -236,23 +237,23 @@ public:
 "  padding: 4px 12px;\n"
 "  margin-bottom: 0;\n"
 "  font-size: 20px;\n"
+"  font-family:Microsoft YaHei UI;\n"
 "  line-height: 20px;\n"
 "  color: #333333;\n"
 "  text-align: center;\n"
 "  vertical-align: middle;\n"
-"  background-color: #3385ff;\n"
+"  background-color: #cfcfcf;\n"
 "  background-repeat: repeat-x;\n"
-"  border-color: #2d78f4;\n"
-"  border-bottom-color:#2d78f4;\n"
+"  border-color: #cfcfcf;\n"
+"  border-bottom-color:#cfcfcf;\n"
 "  border-radius: 8px;\n"
 "border-style:inset;\n"
-"	font-family:Microsoft YaHei UI;\n"
 "}\n"
 "QPushButton:hover{\n"
-"background-color: #438fff;\n"
+"background-color: #a0a0a0;\n"
 "}\n"
 "QPushButton:pressed{\n"
-"  background-color: #4eda64;\n"
+"  background-color: #888888;\n"
 "border-style:outset;\n"
 "}"));
 
@@ -285,9 +286,9 @@ public:
         openAction->setText(QApplication::translate("mainWindow", "\346\211\223\345\274\200(open)", 0));
         saveAction->setText(QApplication::translate("mainWindow", "\344\277\235\345\255\230(save)", 0));
         closeAction->setText(QApplication::translate("mainWindow", "\345\205\263\351\227\255(close)", 0));
-        checkBox_2->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
-        checkBox->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\273\232\350\212\261", 0));
-        checkBox_4->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\234\206", 0));
+        checkBox1->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\234\206", 0));
+        checkBox2->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
+        checkBox3->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\273\232\350\212\261", 0));
         label->setText(QString());
         positiveButton->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", 0));
         negativeButton->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", 0));

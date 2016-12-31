@@ -8,7 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
 	connect(ui.positiveButton, SIGNAL(clicked()), this, SLOT(positiveButtonClicked()));
 	connect(ui.negativeButton, SIGNAL(clicked()), this, SLOT(negativeButtonClicked()));
-	label = 0;
+	connect(ui.checkBox1, SIGNAL(stateChanged(int)), this, SLOT(checkBox1(int)));
+	connect(ui.checkBox2, SIGNAL(stateChanged(int)), this, SLOT(checkBox2(int)));
+	label = 0;//初始化指针，为之后每次清空qlabel对象做准备
 }
 
 MainWindow::~MainWindow()
@@ -29,12 +31,10 @@ std::string MainWindow::longToString(long l)
 	return result;
 }
 
-
-
 /*
 * 霍夫圆变换
 */
-void MainWindow::houghCircles(cv::Mat& image)
+cv::vector<cv::Vec3f> MainWindow::houghCircles(cv::Mat& image)
 {
 	cv::Mat imageGray;
 	cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
@@ -42,16 +42,17 @@ void MainWindow::houghCircles(cv::Mat& image)
 	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
 	cv::GaussianBlur(imageGray, imageGray, cv::Size(9, 9), 2, 2);//高斯模糊，降噪处理
 	cv::vector<cv::Vec3f> circles;
-	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 2, 10, 200, 250, 10, 200);// 霍夫圆变换
+	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 1, imageGray.rows/20, 100, 60, 0, 0);// 霍夫圆变换
 	/* HoughCircles在mian函数中单独跑会出错，原因是:                *\
 	\* 下面的框架可能不正确和/或缺失，没有为 ucrtbased.dll 加载符号 */
-	for (int i = 0; i < circles.size(); i++)
+	/*for (int i = 0; i < circles.size(); i++)
 	{
 		cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));//debug模式下这行会出错
 		int radius = cvRound(circles[i][2]);//debug模式下这行会出错
 		cv::circle(image, center, centerRadius, centerScalar, -1, 8, 0);//圆心
 		cv::circle(image, center, radius, radiusScalar, 1, 8, 0);//圆边
-	}
+	}*/
+	return circles;
 	/*调试窗口*/
 	/*cv::namedWindow("ImageShow", CV_WINDOW_AUTOSIZE);
 	cv::imshow("ImageShow", image);*/
@@ -111,14 +112,16 @@ void MainWindow::openImage()
 	std::string imagePath = filePath.toStdString();
 	image = cv::imread(imagePath);
 	if(!image.data) return;
-	std::clock_t start, end;
+	lineImage = image.clone();//copy整个对象，而不是信息头
+	circleImage = image.clone();
+/*	std::clock_t start, end;
 	start = std::clock();
 	houghCircles(image);
-//	findContours(image);
+	findContours(image);
 	end = std::clock();
 	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
 	cv::Scalar scalar(255,122,122);
-	cv::putText(image, printMessage, cv::Point(0, image.cols/2), 1, 1.0, scalar, 1);
+	cv::putText(image, printMessage, cv::Point(0, image.cols/2), 1, 1.0, scalar, 1);*/
 	showImage(image);
 }
 
@@ -173,4 +176,87 @@ void MainWindow::negativeButtonClicked()
 {
 	this->hide();
 	emit showMainWindow1();
+}
+
+/*
+ * 检测圆勾选事件
+ */
+void MainWindow::checkBox1(int state)
+{
+	/* checkBox1 == 检测圆   *\
+	\* checkBox2 == 检测接边 */
+	cv::Mat insteadImage;
+	if(state == Qt::Checked)//如果checkBox1被勾选
+	{
+		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage克隆
+		{
+			insteadImage = lineImage.clone();
+		}
+		else
+		{
+			insteadImage = image.clone();
+		}
+		//调用画圆函数
+		//
+		//
+		//
+		cv::vector<cv::Vec3f> circles = houghCircles(insteadImage);
+		/* 画圆 */
+		cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
+		int centerRadius = 3;
+		for (int i = 0; i < circles.size(); i++)
+		{
+			cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));//debug模式下这行会出错
+			int radius = cvRound(circles[i][2]);//debug模式下这行会出错
+			cv::circle(insteadImage, center, centerRadius, centerScalar, -1, 8, 0);//圆心
+			cv::circle(insteadImage, center, radius, radiusScalar, 1, 8, 0);//圆边
+		}
+		/* 画圆结束 */
+	}else
+	{
+		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage获取值
+		{
+			insteadImage = lineImage;
+		}
+		else
+		{
+			insteadImage = image;
+		}
+	}
+	if (insteadImage.data) showImage(insteadImage);//当数据不为空，显示图片
+}
+
+/*
+ * 检测接边勾选事件
+ */
+void MainWindow::checkBox2(int state)
+{
+	/* checkBox1 == 检测圆   *\
+	\* checkBox2 == 检测接边 */
+	cv::Mat insteadImage;
+	if(state == Qt::Checked)//如果checkBox2被勾选
+	{
+		if(ui.checkBox2->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
+		{
+			insteadImage = circleImage.clone();
+		}else
+		{
+			insteadImage = image.clone();
+		}
+		//调用画线函数
+		//
+		//
+		//
+		//
+	}else{
+		if (ui.checkBox2->isChecked())//如果checkBox1被勾选,image从circleImage获取值
+		{
+			insteadImage = circleImage;
+		}
+		else
+		{
+			insteadImage = image;
+		}
+	}
+	if (insteadImage.data) showImage(insteadImage);//当数据不为空，显示图片
 }
