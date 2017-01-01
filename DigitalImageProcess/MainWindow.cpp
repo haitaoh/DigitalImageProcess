@@ -18,6 +18,563 @@ MainWindow::~MainWindow()
 	if (label) delete label;
 }
 
+/****************************************************************************************\
+*                                     Circle Detection                                   *
+\****************************************************************************************/
+
+#define hough_cmp_gt(l1,l2) (aux[l1] > aux[l2])
+
+static CV_IMPLEMENT_QSORT_EX(icvHoughSortDescent32s, int, hough_cmp_gt, const int*)
+
+/*
+ *自己实现霍夫梯度
+ */
+	static void
+	icvHoughCirclesGradient1(CvMat* img, float dp, float min_dist,
+		int min_radius, int max_radius,
+		int canny_threshold_low, int canny_threshold_high, int acc_threshold,
+		CvSeq* circles, int circles_max)
+{
+	const int SHIFT = 10, ONE = 1 << SHIFT;
+	cv::Ptr<CvMat> dx, dy;
+	cv::Ptr<CvMat> edges, accum, dist_buf;
+	std::vector<int> sort_buf;
+	cv::Ptr<CvMemStorage> storage;
+
+	int x, y, i, j, k, center_count, nz_count;
+	float min_radius2 = (float)min_radius*min_radius;
+	float max_radius2 = (float)max_radius*max_radius;
+	int rows, cols, arows, acols;
+	int astep, *adata;
+	float* ddata;
+	CvSeq *nz, *centers;
+	float idp, dr;
+	CvSeqReader reader;
+
+	edges = cvCreateMat(img->rows, img->cols, CV_8UC1);
+	cvCanny(img, edges, canny_threshold_low, canny_threshold_high, 3);
+
+	dx = cvCreateMat(img->rows, img->cols, CV_16SC1);
+	dy = cvCreateMat(img->rows, img->cols, CV_16SC1);
+	cvSobel(img, dx, 1, 0, 3);
+	cvSobel(img, dy, 0, 1, 3);
+
+	if (dp < 1.f)
+		dp = 1.f;
+	idp = 1.f / dp;
+	accum = cvCreateMat(cvCeil(img->rows*idp) + 2, cvCeil(img->cols*idp) + 2, CV_32SC1);
+	cvZero(accum);
+
+	storage = cvCreateMemStorage();
+	nz = cvCreateSeq(CV_32SC2, sizeof(CvSeq), sizeof(CvPoint), storage);
+	centers = cvCreateSeq(CV_32SC1, sizeof(CvSeq), sizeof(int), storage);
+
+	rows = img->rows;
+	cols = img->cols;
+	arows = accum->rows - 2;
+	acols = accum->cols - 2;
+	adata = accum->data.i;
+	astep = accum->step / sizeof(adata[0]);
+	// Accumulate circle evidence for each edge pixel
+	for (y = 0; y < rows; y++)
+	{
+		const uchar* edges_row = edges->data.ptr + y*edges->step;
+		const short* dx_row = (const short*)(dx->data.ptr + y*dx->step);
+		const short* dy_row = (const short*)(dy->data.ptr + y*dy->step);
+
+		for (x = 0; x < cols; x++)
+		{
+			float vx, vy;
+			int sx, sy, x0, y0, x1, y1, r;
+			CvPoint pt;
+
+			vx = dx_row[x];
+			vy = dy_row[x];
+
+			if (!edges_row[x] || (vx == 0 && vy == 0))
+				continue;
+
+			float mag = sqrt(vx*vx + vy*vy);
+			assert(mag >= 1);
+			sx = cvRound((vx*idp)*ONE / mag);
+			sy = cvRound((vy*idp)*ONE / mag);
+
+			x0 = cvRound((x*idp)*ONE);
+			y0 = cvRound((y*idp)*ONE);
+			// Step from min_radius to max_radius in both directions of the gradient
+			for (int k1 = 0; k1 < 2; k1++)
+			{
+				x1 = x0 + min_radius * sx;
+				y1 = y0 + min_radius * sy;
+
+				for (r = min_radius; r <= max_radius; x1 += sx, y1 += sy, r++)
+				{
+					int x2 = x1 >> SHIFT, y2 = y1 >> SHIFT;
+					if ((unsigned)x2 >= (unsigned)acols ||
+						(unsigned)y2 >= (unsigned)arows)
+						break;
+					adata[y2*astep + x2]++;
+				}
+
+				sx = -sx; sy = -sy;
+			}
+
+			pt.x = x; pt.y = y;
+			cvSeqPush(nz, &pt);
+		}
+	}
+
+	nz_count = nz->total;
+	if (!nz_count)
+		return;
+	//Find possible circle centers
+	for (y = 1; y < arows - 1; y++)
+	{
+		for (x = 1; x < acols - 1; x++)
+		{
+			int base = y*(acols + 2) + x;
+			if (adata[base] > acc_threshold &&
+				adata[base] > adata[base - 1] && adata[base] > adata[base + 1] &&
+				adata[base] > adata[base - acols - 2] && adata[base] > adata[base + acols + 2])
+				cvSeqPush(centers, &base);
+		}
+	}
+
+	center_count = centers->total;
+	if (!center_count)
+		return;
+
+	sort_buf.resize(MAX(center_count, nz_count));
+	cvCvtSeqToArray(centers, &sort_buf[0]);
+
+	icvHoughSortDescent32s(&sort_buf[0], center_count, adata);
+	cvClearSeq(centers);
+	cvSeqPushMulti(centers, &sort_buf[0], center_count);
+
+	dist_buf = cvCreateMat(1, nz_count, CV_32FC1);
+	ddata = dist_buf->data.fl;
+
+	dr = dp;
+	min_dist = MAX(min_dist, dp);
+	min_dist *= min_dist;
+	// For each found possible center
+	// Estimate radius and check support
+	for (i = 0; i < centers->total; i++)
+	{
+		int ofs = *(int*)cvGetSeqElem(centers, i);
+		y = ofs / (acols + 2);
+		x = ofs - (y)*(acols + 2);
+		//Calculate circle's center in pixels
+		float cx = (float)((x + 0.5f)*dp), cy = (float)((y + 0.5f)*dp);
+		float start_dist, dist_sum;
+		float r_best = 0;
+		int max_count = 0;
+		// Check distance with previously detected circles
+		for (j = 0; j < circles->total; j++)
+		{
+			float* c = (float*)cvGetSeqElem(circles, j);
+			if ((c[0] - cx)*(c[0] - cx) + (c[1] - cy)*(c[1] - cy) < min_dist)
+				break;
+		}
+
+		if (j < circles->total)
+			continue;
+		// Estimate best radius
+		cvStartReadSeq(nz, &reader);
+		for (j = k = 0; j < nz_count; j++)
+		{
+			CvPoint pt;
+			float _dx, _dy, _r2;
+			CV_READ_SEQ_ELEM(pt, reader);
+			_dx = cx - pt.x; _dy = cy - pt.y;
+			_r2 = _dx*_dx + _dy*_dy;
+			if (min_radius2 <= _r2 && _r2 <= max_radius2)
+			{
+				ddata[k] = _r2;
+				sort_buf[k] = k;
+				k++;
+			}
+		}
+
+		int nz_count1 = k, start_idx = nz_count1 - 1;
+		if (nz_count1 == 0)
+			continue;
+		dist_buf->cols = nz_count1;
+		cvPow(dist_buf, dist_buf, 0.5);
+		icvHoughSortDescent32s(&sort_buf[0], nz_count1, (int*)ddata);
+
+		dist_sum = start_dist = ddata[sort_buf[nz_count1 - 1]];
+		for (j = nz_count1 - 2; j >= 0; j--)
+		{
+			float d = ddata[sort_buf[j]];
+
+			if (d > max_radius)
+				break;
+
+			if (d - start_dist > dr)
+			{
+				float r_cur = ddata[sort_buf[(j + start_idx) / 2]];
+				if ((start_idx - j)*r_best >= max_count*r_cur ||
+					(r_best < FLT_EPSILON && start_idx - j >= max_count))
+				{
+					r_best = r_cur;
+					max_count = start_idx - j;
+				}
+				start_dist = d;
+				start_idx = j;
+				dist_sum = 0;
+			}
+			dist_sum += d;
+		}
+		// Check if the circle has enough support
+		if (max_count > acc_threshold)
+		{
+			float c[3];
+			c[0] = cx;
+			c[1] = cy;
+			c[2] = (float)r_best;
+			cvSeqPush(circles, c);
+			if (circles->total > circles_max)
+				return;
+		}
+	}
+}
+
+
+/*
+ * 霍夫梯度法
+ */
+static void
+icvHoughCirclesGradient(CvMat* img, float dp, float min_dist,
+	int min_radius, int max_radius,
+	int canny_threshold_low, int canny_threshold_high, int acc_threshold,
+	CvSeq* circles, int circles_max)
+{
+	const int SHIFT = 10, ONE = 1 << SHIFT;
+	cv::Ptr<CvMat> dx, dy;
+	cv::Ptr<CvMat> edges, accum, dist_buf;
+	std::vector<int> sort_buf;
+	cv::Ptr<CvMemStorage> storage;
+
+	int x, y, i, j, k, center_count, nz_count;
+	float min_radius2 = (float)min_radius*min_radius;
+	float max_radius2 = (float)max_radius*max_radius;
+	int rows, cols, arows, acols;
+	int astep, *adata;
+	float* ddata;
+	CvSeq *nz, *centers;
+	float idp, dr;
+	CvSeqReader reader;
+
+	edges = cvCreateMat(img->rows, img->cols, CV_8UC1);
+	cvCanny(img, edges, canny_threshold_low, canny_threshold_high, 3);
+
+	dx = cvCreateMat(img->rows, img->cols, CV_16SC1);
+	dy = cvCreateMat(img->rows, img->cols, CV_16SC1);
+	cvSobel(img, dx, 1, 0, 3);
+	cvSobel(img, dy, 0, 1, 3);
+
+	if (dp < 1.f)
+		dp = 1.f;
+	idp = 1.f / dp;
+	accum = cvCreateMat(cvCeil(img->rows*idp) + 2, cvCeil(img->cols*idp) + 2, CV_32SC1);
+	cvZero(accum);
+
+	storage = cvCreateMemStorage();
+	nz = cvCreateSeq(CV_32SC2, sizeof(CvSeq), sizeof(CvPoint), storage);
+	centers = cvCreateSeq(CV_32SC1, sizeof(CvSeq), sizeof(int), storage);
+
+	rows = img->rows;
+	cols = img->cols;
+	arows = accum->rows - 2;
+	acols = accum->cols - 2;
+	adata = accum->data.i;
+	astep = accum->step / sizeof(adata[0]);
+	// Accumulate circle evidence for each edge pixel
+	for (y = 0; y < rows; y++)
+	{
+		const uchar* edges_row = edges->data.ptr + y*edges->step;
+		const short* dx_row = (const short*)(dx->data.ptr + y*dx->step);
+		const short* dy_row = (const short*)(dy->data.ptr + y*dy->step);
+
+		for (x = 0; x < cols; x++)
+		{
+			float vx, vy;
+			int sx, sy, x0, y0, x1, y1, r;
+			CvPoint pt;
+
+			vx = dx_row[x];
+			vy = dy_row[x];
+
+			if (!edges_row[x] || (vx == 0 && vy == 0))
+				continue;
+
+			float mag = sqrt(vx*vx + vy*vy);
+			assert(mag >= 1);
+			sx = cvRound((vx*idp)*ONE / mag);
+			sy = cvRound((vy*idp)*ONE / mag);
+
+			x0 = cvRound((x*idp)*ONE);
+			y0 = cvRound((y*idp)*ONE);
+			// Step from min_radius to max_radius in both directions of the gradient
+			for (int k1 = 0; k1 < 2; k1++)
+			{
+				x1 = x0 + min_radius * sx;
+				y1 = y0 + min_radius * sy;
+
+				for (r = min_radius; r <= max_radius; x1 += sx, y1 += sy, r++)
+				{
+					int x2 = x1 >> SHIFT, y2 = y1 >> SHIFT;
+					if ((unsigned)x2 >= (unsigned)acols ||
+						(unsigned)y2 >= (unsigned)arows)
+						break;
+					adata[y2*astep + x2]++;
+				}
+
+				sx = -sx; sy = -sy;
+			}
+
+			pt.x = x; pt.y = y;
+			cvSeqPush(nz, &pt);
+		}
+	}
+
+	nz_count = nz->total;
+	if (!nz_count)
+		return;
+	//Find possible circle centers
+	for (y = 1; y < arows - 1; y++)
+	{
+		for (x = 1; x < acols - 1; x++)
+		{
+			int base = y*(acols + 2) + x;
+			if (adata[base] > acc_threshold &&
+				adata[base] > adata[base - 1] && adata[base] > adata[base + 1] &&
+				adata[base] > adata[base - acols - 2] && adata[base] > adata[base + acols + 2])
+				cvSeqPush(centers, &base);
+		}
+	}
+
+	center_count = centers->total;
+	if (!center_count)
+		return;
+
+	sort_buf.resize(MAX(center_count, nz_count));
+	cvCvtSeqToArray(centers, &sort_buf[0]);
+
+	icvHoughSortDescent32s(&sort_buf[0], center_count, adata);
+	cvClearSeq(centers);
+	cvSeqPushMulti(centers, &sort_buf[0], center_count);
+
+	dist_buf = cvCreateMat(1, nz_count, CV_32FC1);
+	ddata = dist_buf->data.fl;
+
+	dr = dp;
+	min_dist = MAX(min_dist, dp);
+	min_dist *= min_dist;
+	// For each found possible center
+	// Estimate radius and check support
+	for (i = 0; i < centers->total; i++)
+	{
+		int ofs = *(int*)cvGetSeqElem(centers, i);
+		y = ofs / (acols + 2);
+		x = ofs - (y)*(acols + 2);
+		//Calculate circle's center in pixels
+		float cx = (float)((x + 0.5f)*dp), cy = (float)((y + 0.5f)*dp);
+		float start_dist, dist_sum;
+		float r_best = 0;
+		int max_count = 0;
+		// Check distance with previously detected circles
+		for (j = 0; j < circles->total; j++)
+		{
+			float* c = (float*)cvGetSeqElem(circles, j);
+			if ((c[0] - cx)*(c[0] - cx) + (c[1] - cy)*(c[1] - cy) < min_dist)
+				break;
+		}
+
+		if (j < circles->total)
+			continue;
+		// Estimate best radius
+		cvStartReadSeq(nz, &reader);
+		for (j = k = 0; j < nz_count; j++)
+		{
+			CvPoint pt;
+			float _dx, _dy, _r2;
+			CV_READ_SEQ_ELEM(pt, reader);
+			_dx = cx - pt.x; _dy = cy - pt.y;
+			_r2 = _dx*_dx + _dy*_dy;
+			if (min_radius2 <= _r2 && _r2 <= max_radius2)
+			{
+				ddata[k] = _r2;
+				sort_buf[k] = k;
+				k++;
+			}
+		}
+
+		int nz_count1 = k, start_idx = nz_count1 - 1;
+		if (nz_count1 == 0)
+			continue;
+		dist_buf->cols = nz_count1;
+		cvPow(dist_buf, dist_buf, 0.5);
+		icvHoughSortDescent32s(&sort_buf[0], nz_count1, (int*)ddata);
+
+		dist_sum = start_dist = ddata[sort_buf[nz_count1 - 1]];
+		for (j = nz_count1 - 2; j >= 0; j--)
+		{
+			float d = ddata[sort_buf[j]];
+
+			if (d > max_radius)
+				break;
+
+			if (d - start_dist > dr)
+			{
+				float r_cur = ddata[sort_buf[(j + start_idx) / 2]];
+				if ((start_idx - j)*r_best >= max_count*r_cur ||
+					(r_best < FLT_EPSILON && start_idx - j >= max_count))
+				{
+					r_best = r_cur;
+					max_count = start_idx - j;
+				}
+				start_dist = d;
+				start_idx = j;
+				dist_sum = 0;
+			}
+			dist_sum += d;
+		}
+		// Check if the circle has enough support
+		if (max_count > acc_threshold)
+		{
+			float c[3];
+			c[0] = cx;
+			c[1] = cy;
+			c[2] = (float)r_best;
+			cvSeqPush(circles, c);
+			if (circles->total > circles_max)
+				return;
+		}
+	}
+}
+
+/*
+ * 霍夫圆变换 使用霍夫梯度法
+ */
+CvSeq*
+cvHoughCircles(CvArr* src_image, void* circle_storage,
+	int method, double dp, double min_dist,
+	double canny_threshold_low, double canny_threshold_high, double param2,
+	int min_radius, int max_radius)
+{
+	CvSeq* result = 0;//返回计算结果序列
+	CvMat stub, *img = (CvMat*)src_image;
+	CvMat* mat = 0;
+	CvSeq* circles = 0;
+	CvSeq circles_header;
+	CvSeqBlock circles_block;
+	int circles_max = INT_MAX;//max int值
+	int canny_threshold_l = cvRound(canny_threshold_low);//canny边缘算法 下阈值
+	int canny_threshold_h = cvRound(canny_threshold_high);//canny边缘算法 上阈值
+	int acc_threshold = cvRound(param2);//圆心累加 接受阈值
+
+	img = cvGetMat(img, &stub);
+
+	//条件判断，不合格则抛出异常
+	if (!CV_IS_MASK_ARR(img))
+		CV_Error(CV_StsBadArg, "The source image must be 8-bit, single-channel");
+
+	if (!circle_storage)
+		CV_Error(CV_StsNullPtr, "NULL destination");
+
+	if (dp <= 0 || min_dist <= 0 || canny_threshold_l <= 0 || canny_threshold_h <= 0 || acc_threshold <= 0)
+		CV_Error(CV_StsOutOfRange, "dp, min_dist, canny_threshold and acc_threshold must be all positive numbers");
+	
+	//确保圆半径合格
+	min_radius = MAX(min_radius, 0);
+	if (max_radius <= 0)
+		max_radius = MAX(img->rows, img->cols);
+	else if (max_radius <= min_radius)
+		max_radius = min_radius + 2;
+
+	//根据类型，初始化数组
+	if (CV_IS_STORAGE(circle_storage))
+	{
+		circles = cvCreateSeq(CV_32FC3, sizeof(CvSeq),
+			sizeof(float) * 3, (CvMemStorage*)circle_storage);
+	}
+	else if (CV_IS_MAT(circle_storage))
+	{
+		mat = (CvMat*)circle_storage;
+
+		if (!CV_IS_MAT_CONT(mat->type) || (mat->rows != 1 && mat->cols != 1) ||
+			CV_MAT_TYPE(mat->type) != CV_32FC3)
+			CV_Error(CV_StsBadArg,
+				"The destination matrix should be continuous and have a single row or a single column");
+
+		circles = cvMakeSeqHeaderForArray(CV_32FC3, sizeof(CvSeq), sizeof(float) * 3,
+			mat->data.ptr, mat->rows + mat->cols - 1, &circles_header, &circles_block);
+		circles_max = circles->total;
+		cvClearSeq(circles);
+	}
+	else
+		CV_Error(CV_StsBadArg, "Destination is not CvMemStorage* nor CvMat*");
+
+	//选择算法，目前只有一种
+	switch (method)
+	{
+	case CV_HOUGH_GRADIENT:
+		icvHoughCirclesGradient(img, (float)dp, (float)min_dist,
+			min_radius, max_radius, canny_threshold_low,canny_threshold_high,
+			acc_threshold, circles, circles_max);
+		break;
+	default:
+		CV_Error(CV_StsBadArg, "Unrecognized method id");
+	}
+
+	if (mat)
+	{
+		if (mat->cols > mat->rows)
+			mat->cols = circles->total;
+		else
+			mat->rows = circles->total;
+	}
+	else
+		result = circles;
+
+	return result;
+}
+
+const int STORAGE_SIZE = 1 << 12;
+
+/*
+ * 序列转数组（vector）
+ */
+static void seqToMat(const CvSeq* seq, cv::OutputArray _arr)
+{
+	if (seq && seq->total > 0)
+	{
+		_arr.create(1, seq->total, seq->flags, -1, true);
+		cv::Mat arr = _arr.getMat();
+		cvCvtSeqToArray(seq, arr.data);
+	}
+	else
+		_arr.release();
+}
+
+/*
+ * c++ 使用cvHoughCircles来获取圆
+ */
+void myHough::HoughCircles(cv::InputArray _image, cv::OutputArray _circles,
+	int method, double dp, double min_dist,
+	double canny_threshold_low, double canny_threshold_high, double acc_threshold,
+	int minRadius, int maxRadius)
+{
+	cv::Ptr<CvMemStorage> storage = cvCreateMemStorage(STORAGE_SIZE);
+	cv::Mat image = _image.getMat();
+	CvMat c_image = image;
+	CvSeq* seq = cvHoughCircles(&c_image, storage, method,
+		dp, min_dist, canny_threshold_low, canny_threshold_high, acc_threshold, minRadius, maxRadius);
+	seqToMat(seq, _circles);
+}
+
 /*
  * long 类型转 std::string 类型
  */
@@ -34,15 +591,16 @@ std::string MainWindow::longToString(long l)
 /*
 * 霍夫圆变换
 */
-cv::vector<cv::Vec3f> MainWindow::houghCircles(cv::Mat& image)
+void MainWindow::houghCircles(cv::Mat& image,cv::vector<cv::Vec3f> &circles)
 {
 	cv::Mat imageGray;
-	cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
-	int centerRadius = 3;
+	/*cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
+	int centerRadius = 3;*/
 	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
-	cv::GaussianBlur(imageGray, imageGray, cv::Size(9, 9), 2, 2);//高斯模糊，降噪处理
-	cv::vector<cv::Vec3f> circles;
-	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 1, imageGray.rows/20, 100, 60, 0, 0);// 霍夫圆变换
+	cv::GaussianBlur(imageGray, imageGray, cv::Size(5, 5), 1, 1);//高斯模糊，降噪处理
+	cv::HoughCircles(image, circles, CV_HOUGH_GRADIENT, 1, imageGray.rows/20, 40, 100, 0, 0);// 霍夫圆变换
+	cv::namedWindow("Contours1", CV_WINDOW_AUTOSIZE);
+	cv::imshow("Contours1", imageGray);
 	/* HoughCircles在mian函数中单独跑会出错，原因是:                *\
 	\* 下面的框架可能不正确和/或缺失，没有为 ucrtbased.dll 加载符号 */
 	/*for (int i = 0; i < circles.size(); i++)
@@ -52,31 +610,33 @@ cv::vector<cv::Vec3f> MainWindow::houghCircles(cv::Mat& image)
 		cv::circle(image, center, centerRadius, centerScalar, -1, 8, 0);//圆心
 		cv::circle(image, center, radius, radiusScalar, 1, 8, 0);//圆边
 	}*/
-	return circles;
 	/*调试窗口*/
 	/*cv::namedWindow("ImageShow", CV_WINDOW_AUTOSIZE);
 	cv::imshow("ImageShow", image);*/
 }
 
 /*
-* 寻找轮廓
+* 寻找轮廓,利用canny算法
 */
-void MainWindow::findContours(cv::Mat& image)
+void MainWindow::findContours(cv::Mat& image, cv::vector<cv::vector<cv::Point>> &contours)
 {
-	cv::Mat image_gray, canny_output;
-	cv::cvtColor(image, image_gray, CV_BGR2GRAY);//转换成灰度图 
-	cv::blur(image_gray, image_gray, cv::Size(3, 3));//模糊降噪
-	cv::vector<cv::vector<cv::Point>> contours;
+	cv::Mat imageGray;
 	cv::vector<cv::Vec4i> hierarchy;
-	cv::Canny(image_gray, canny_output, 100, 300);//用canny算子检测边缘
-	cv::findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//寻找轮廓
-	cv::Mat drawing = cv::Mat::zeros(canny_output.size(), CV_8UC3);
-	for (int i = 0; i < contours.size(); i++)
+	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
+	cv::GaussianBlur(imageGray, imageGray, cv::Size(5,5),1,1);//模糊降噪
+	cv::Canny(imageGray, imageGray, 10, 40);
+	cv::threshold(imageGray, imageGray, 128, 255, cv::THRESH_BINARY);//阈值化检测，转换为二值对象
+	cv::findContours(imageGray,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE, cv::Point(0,0));
+	for(int i = 0;i < contours.size();i++)
 	{
-		cv::drawContours(drawing, contours, i, cv::Scalar(0, 0, 255), 2, 8, hierarchy, 0, cv::Point());
+		drawContours(image, contours, i, cv::Scalar(255,255,255), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+		if(contours[i].size() > 5)//必须大于等于6
+		{
+			cv::ellipse(image, fitEllipse(contours[i]), cv::Scalar(255, 255, 255), 2, 8);
+		}
 	}
-	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-	imshow("Contours", drawing);
+	cv::namedWindow("show", CV_WINDOW_AUTOSIZE);
+	cv::imshow("show", image);
 }
 
 /*
@@ -98,6 +658,11 @@ void MainWindow::showImage(cv::Mat& image)
 	ui.scrollArea->setMaximumHeight(480);
 	ui.scrollArea->setMaximumWidth(830);
 	ui.scrollArea->resize(label->pixmap()->size());
+}
+
+void MainWindow::setImage(cv::Mat image)
+{
+	this->image = image;
 }
 
 /*
@@ -179,51 +744,67 @@ void MainWindow::negativeButtonClicked()
 }
 
 /*
- * 检测圆勾选事件
+ * 检测圆 勾选事件
  */
 void MainWindow::checkBox1(int state)
 {
 	/* checkBox1 == 检测圆   *\
 	\* checkBox2 == 检测接边 */
-	cv::Mat insteadImage;
 	if(state == Qt::Checked)//如果checkBox1被勾选
 	{
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage克隆
 		{
-			insteadImage = lineImage.clone();
+			result = lineImage.clone();
 		}
 		else
 		{
-			insteadImage = image.clone();
+			result = image.clone();
 		}
 		//调用画圆函数
 		//
-		//
-		//
-		cv::vector<cv::Vec3f> circles = houghCircles(insteadImage);
-		/* 画圆 */
+		/*cv::vector<cv::vector<cv::Point>> contours;
+		findContours(result,contours);
+		cv::vector<cv::Vec3f> circles;
+		houghCircles(result,circles);
+		/* 画圆 #1#
 		cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
 		int centerRadius = 3;
 		for (int i = 0; i < circles.size(); i++)
 		{
-			cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));//debug模式下这行会出错
-			int radius = cvRound(circles[i][2]);//debug模式下这行会出错
-			cv::circle(insteadImage, center, centerRadius, centerScalar, -1, 8, 0);//圆心
-			cv::circle(insteadImage, center, radius, radiusScalar, 1, 8, 0);//圆边
+			cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+			int radius = cvRound(circles[i][2]);
+			cv::circle(result, center, centerRadius, centerScalar, -1, 8, 0);//圆心
+			cv::circle(result, center, radius, radiusScalar, 1, 8, 0);//圆边
 		}
-		/* 画圆结束 */
+		/* 画圆结束 #1#
+		cv::namedWindow("ImageShow", CV_WINDOW_AUTOSIZE);
+		cv::imshow("ImageShow", result);*/
+		cv::cvtColor(image, image, CV_BGR2GRAY);//转换成灰度图
+		cv::GaussianBlur(image, image, cv::Size(5, 5), 1, 1);//高斯模糊，降噪处理
+		cv::vector<cv::Vec3f> circles;
+		HoughCircles(image,circles,CV_HOUGH_GRADIENT,1,image.rows/40,40,100);
+		cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
+		int centerRadius = 3;
+		for (int i = 0; i < circles.size(); i++)
+		{
+			cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+			int radius = cvRound(circles[i][2]);
+			cv::circle(result, center, centerRadius, centerScalar, -1, 8, 0);//圆心
+			cv::circle(result, center, radius, radiusScalar, 1, 8, 0);//圆边
+		}
 	}else
 	{
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage获取值
 		{
-			insteadImage = lineImage;
+			result = lineImage.clone();
 		}
 		else
 		{
-			insteadImage = image;
+			result = image.clone();
 		}
 	}
-	if (insteadImage.data) showImage(insteadImage);//当数据不为空，显示图片
+	if (result.data)
+		showImage(result);//当数据不为空，显示图片
 }
 
 /*
@@ -233,15 +814,14 @@ void MainWindow::checkBox2(int state)
 {
 	/* checkBox1 == 检测圆   *\
 	\* checkBox2 == 检测接边 */
-	cv::Mat insteadImage;
 	if(state == Qt::Checked)//如果checkBox2被勾选
 	{
-		if(ui.checkBox2->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
+		if(ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
 		{
-			insteadImage = circleImage.clone();
+			result = circleImage.clone();
 		}else
 		{
-			insteadImage = image.clone();
+			result = image.clone();
 		}
 		//调用画线函数
 		//
@@ -249,14 +829,14 @@ void MainWindow::checkBox2(int state)
 		//
 		//
 	}else{
-		if (ui.checkBox2->isChecked())//如果checkBox1被勾选,image从circleImage获取值
+		if (ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage获取值
 		{
-			insteadImage = circleImage;
+			result = circleImage;
 		}
 		else
 		{
-			insteadImage = image;
+			result = image;
 		}
 	}
-	if (insteadImage.data) showImage(insteadImage);//当数据不为空，显示图片
+	if (result.data) showImage(result);//当数据不为空，显示图片
 }

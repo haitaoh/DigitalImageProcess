@@ -5,6 +5,7 @@
 #include "qmessagebox.h"
 #include "qfiledialog.h"
 #include "qlabel.h"
+#include "qcheckbox.h"
 
 #include "opencv\cv.hpp"
 #include "opencv2\highgui\highgui.hpp"
@@ -20,9 +21,10 @@ public:
 	MainWindow(QWidget* parent = Q_NULLPTR);
 	~MainWindow();
 	std::string longToString(long l);
-	cv::vector<cv::Vec3f> houghCircles(cv::Mat& image);
-	void findContours(cv::Mat& image);
+	void houghCircles(cv::Mat& image, cv::vector<cv::Vec3f> &circles);
+	void findContours(cv::Mat& image,cv::vector<cv::vector<cv::Point>> &contours);
 	void showImage(cv::Mat& image);
+	void setImage(cv::Mat image);
 
 private://申明私有变量
 	Ui::MainWindowClass ui;
@@ -30,6 +32,7 @@ private://申明私有变量
 	QString imageFilePath;
 	cv::Mat result;
 	QLabel *label;
+
 
 private slots://申明槽函数
 	void openImage();
@@ -43,3 +46,10 @@ private slots://申明槽函数
 signals://申明信号函数
 	void showMainWindow1();
 };
+
+namespace myHough {
+	void HoughCircles(cv::InputArray _image, cv::OutputArray _circles,
+		int method, double dp, double min_dist,
+		double canny_threshold_low, double canny_threshold_high, double acc_threshold,
+		int minRadius = 0,int maxRadius = 0);
+}

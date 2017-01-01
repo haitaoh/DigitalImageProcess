@@ -118,14 +118,14 @@ void MainWindow1::houghCircles(cv::Mat& image)
 */
 void MainWindow1::findContours(cv::Mat& image)
 {
-	cv::Mat image_gray, canny_output;
+	cv::Mat image_gray, detected_edges;
 	cv::cvtColor(image, image_gray, CV_BGR2GRAY);//×ª»»³É»Ò¶ÈÍ¼ 
 	cv::blur(image_gray, image_gray, cv::Size(3, 3));//Ä£ºı½µÔë
 	cv::vector<cv::vector<cv::Point>> contours;
 	cv::vector<cv::Vec4i> hierarchy;
-	cv::Canny(image_gray, canny_output, 100, 300);//ÓÃcannyËã×Ó¼ì²â±ßÔµ
-	cv::findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//Ñ°ÕÒÂÖÀª
-	cv::Mat drawing = cv::Mat::zeros(canny_output.size(), CV_8UC3);
+	cv::Canny(image_gray, detected_edges, 100, 300);//ÓÃcannyËã×Ó¼ì²â±ßÔµ
+	cv::findContours(detected_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//Ñ°ÕÒÂÖÀª
+	cv::Mat drawing = cv::Mat::zeros(detected_edges.size(), CV_8UC3);
 	for (int i = 0; i < contours.size(); i++)
 	{
 		cv::drawContours(drawing, contours, i, cv::Scalar(0, 0, 255), 2, 8, hierarchy, 0, cv::Point());

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow1.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -282,17 +282,17 @@ public:
 
     void retranslateUi(QMainWindow *mainWindow)
     {
-        mainWindow->setWindowTitle(QApplication::translate("mainWindow", "\345\233\276\345\275\242\350\257\206\345\210\253", 0));
-        openAction->setText(QApplication::translate("mainWindow", "\346\211\223\345\274\200(open)", 0));
-        saveAction->setText(QApplication::translate("mainWindow", "\344\277\235\345\255\230(save)", 0));
-        closeAction->setText(QApplication::translate("mainWindow", "\345\205\263\351\227\255(close)", 0));
-        checkBox1->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\234\206", 0));
-        checkBox2->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\216\245\350\276\271", 0));
-        checkBox3->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\273\232\350\212\261", 0));
+        mainWindow->setWindowTitle(QApplication::translate("mainWindow", "\345\233\276\345\275\242\350\257\206\345\210\253", Q_NULLPTR));
+        openAction->setText(QApplication::translate("mainWindow", "\346\211\223\345\274\200(open)", Q_NULLPTR));
+        saveAction->setText(QApplication::translate("mainWindow", "\344\277\235\345\255\230(save)", Q_NULLPTR));
+        closeAction->setText(QApplication::translate("mainWindow", "\345\205\263\351\227\255(close)", Q_NULLPTR));
+        checkBox1->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\345\234\206", Q_NULLPTR));
+        checkBox2->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\216\245\350\276\271", Q_NULLPTR));
+        checkBox3->setText(QApplication::translate("mainWindow", "\346\243\200\346\265\213\346\273\232\350\212\261", Q_NULLPTR));
         label->setText(QString());
-        positiveButton->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", 0));
-        negativeButton->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", 0));
-        menu_File->setTitle(QApplication::translate("mainWindow", "\346\226\207\344\273\266(File)", 0));
+        positiveButton->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", Q_NULLPTR));
+        negativeButton->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", Q_NULLPTR));
+        menu_File->setTitle(QApplication::translate("mainWindow", "\346\226\207\344\273\266(File)", Q_NULLPTR));
     } // retranslateUi
 
 };

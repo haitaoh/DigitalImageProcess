@@ -62,7 +62,7 @@ static void icvFindCirclesGradient( CvMat* img, cv::Mat &contour_img, float dp, 
 	float idp, dr;
 	CvSeqReader reader;
 
-	//如果输入的轮廓图尺寸与输入的源图完全相同，则使用输入的轮廓图，否则cvCanny提取轮廓图，可以更灵活的预处理图像
+	/*//如果输入的轮廓图尺寸与输入的源图完全相同，则使用输入的轮廓图，否则cvCanny提取轮廓图，可以更灵活的预处理图像
 	if ( contour_img.cols==img->cols && contour_img.rows==img->rows )
 	{
 		edges = cvCloneMat(&CvMat(contour_img));
@@ -71,7 +71,7 @@ static void icvFindCirclesGradient( CvMat* img, cv::Mat &contour_img, float dp, 
 		edges = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 		cvCanny( img, edges, low_threshold, high_threshold, 3 );	//添加cvCanny的低阈值low_threshold，参数控制可以更灵活
 		contour_img=cv::Mat(edges)+0;
-	}
+	}*/
 
 	dx = cvCreateMat( img->rows, img->cols, CV_16SC1 );
 	dy = cvCreateMat( img->rows, img->cols, CV_16SC1 );
@@ -318,9 +318,11 @@ CV_IMPL CvSeq* cvFindCircles( CvArr* src_image, cv::Mat &contour_image, void* ci
 	else
 		CV_Error( CV_StsBadArg, "Destination is not CvMemStorage* nor CvMat*" );
 
+/*
 	icvFindCirclesGradient( img, contour_image, (float)dp, (float)min_dist,
 		min_radius, max_radius, low_threshold,high_threshold,
 		acc_threshold, circles, circles_max );
+*/
 
 	if( mat )
 	{
