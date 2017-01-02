@@ -21,10 +21,13 @@ public:
 	MainWindow(QWidget* parent = Q_NULLPTR);
 	~MainWindow();
 	std::string longToString(long l);
-	void houghCircles(cv::Mat& image, cv::vector<cv::Vec3f> &circles);
+	void houghCircles(cv::Mat& image,cv::Mat &img,cv::vector<cv::Vec3f> &circles,
+		int dp, int min_dist, int canny_threshold_low, int canny_threshold_high,
+		int acc_threshold, int min_radius, int max_radius);
 	void findContours(cv::Mat& image,cv::vector<cv::vector<cv::Point>> &contours);
 	void showImage(cv::Mat& image);
 	void setImage(cv::Mat image);
+	void pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage);
 
 private://申明私有变量
 	Ui::MainWindowClass ui;
