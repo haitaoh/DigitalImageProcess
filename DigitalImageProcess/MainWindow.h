@@ -20,7 +20,9 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget* parent = Q_NULLPTR);
 	~MainWindow();
+	void init();
 	std::string longToString(long l);
+	void houghLines(cv::Mat &image, cv::vector<cv::Vec4i> &lines);
 	void houghCircles(cv::Mat& image,cv::Mat &img,cv::vector<cv::Vec3f> &circles,
 		int dp, int min_dist, int canny_threshold_low, int canny_threshold_high,
 		int acc_threshold, int min_radius, int max_radius);
@@ -28,6 +30,8 @@ public:
 	void showImage(cv::Mat& image);
 	void setImage(cv::Mat image);
 	void pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage);
+	void doFindPositiveCircles(cv::Mat &image);
+	void doFindPositiveLine(cv::Mat &image);
 
 private://申明私有变量
 	Ui::MainWindowClass ui;

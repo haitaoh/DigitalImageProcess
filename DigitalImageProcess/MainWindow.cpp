@@ -18,6 +18,22 @@ MainWindow::~MainWindow()
 	if (label) delete label;
 }
 
+/*
+ * 初始化
+ */
+void MainWindow::init()
+{
+	if(image.data)//如果image有数据，利用它初始化circleImage和lineImage
+	{
+		circleImage = image.clone();
+		lineImage = image.clone();
+		if(circleImage.data)
+			doFindPositiveCircles(circleImage);
+		if(lineImage.data)
+			doFindPositiveLine(lineImage);
+	}
+}
+
 /****************************************************************************************\
 *                                     Circle Detection                                   *
 \****************************************************************************************/
@@ -374,6 +390,22 @@ std::string MainWindow::longToString(long l)
 }
 
 /*
+ *霍夫线变换 找接边
+ */
+void MainWindow::houghLines(cv::Mat &image,cv::vector<cv::Vec4i> &lines)
+{
+	cv::Mat dst;
+	pretreatmentImage(image, dst);
+	cv::Canny(dst, dst, 10, 12);
+	cv::HoughLinesP(dst, lines, 1, CV_PI / 180, 50, 50, 10);
+	for (size_t i = 0; i < lines.size(); i++)
+	{
+		cv::Vec4i l = lines[i];
+		cv::line(image, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(0, 0, 255), 1, CV_AA);
+	}
+}
+
+/*
 * 霍夫圆变换 找圆
 */
 void MainWindow::houghCircles(cv::Mat& image,cv::Mat &img,cv::vector<cv::Vec3f> &circles,
@@ -454,6 +486,30 @@ void MainWindow::pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage
 {
 	cv::cvtColor(sourceImage, treatmentImage, CV_BGR2GRAY);//转换成灰度图
 	cv::GaussianBlur(treatmentImage, treatmentImage, cv::Size(5, 5), 1, 1);//高斯模糊，降噪处理
+}
+
+/*
+ * 找圆
+ */
+void MainWindow::doFindPositiveCircles(cv::Mat &image)
+{
+	cv::Mat imageGray;
+	pretreatmentImage(image, imageGray);
+	cv::vector<cv::Vec3f> circles1;
+	houghCircles(imageGray, image, circles1, 1, 1, 15, 44, 115, 74, 189);//外圈
+	cv::vector<cv::Vec3f> circles2;
+	houghCircles(imageGray, image, circles2, 1, 1, 15, 44, 122, 177, 189);//内圈
+	cv::vector<cv::Vec3f> circles3;
+	houghCircles(imageGray, image, circles3, 1, 1, 15, 44, 74, 74, 177);//底面
+}
+
+/*
+ * 找接边
+ */
+void MainWindow::doFindPositiveLine(cv::Mat &image)
+{
+	cv::vector<cv::Vec4i> lines;
+	houghLines(image, lines);
 }
 
 /*
@@ -546,20 +602,19 @@ void MainWindow::checkBox1(int state)
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage克隆
 		{
 			result = lineImage.clone();
+			//doFindPositiveCircles(result)
+			std::clock_t start, end;
+			start = std::clock();
+			doFindPositiveCircles(result);
+			end = std::clock();
+			std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
+			cv::Scalar scalar(255, 122, 122);
+			cv::putText(result, printMessage, cv::Point(0, result.cols / 2), 1, 1.0, scalar, 1);
 		}
 		else
 		{
-			result = image.clone();
+			result = circleImage.clone();
 		}
-		cv::Mat imageGray;
-		pretreatmentImage(result, imageGray);
-		cv::vector<cv::Vec3f> circles1;
-		houghCircles(imageGray, result, circles1, 1, 1, 15, 44, 115, 74, 189);//外圈
-		cv::vector<cv::Vec3f> circles2;
-		houghCircles(imageGray, result, circles2, 1, 1, 15, 44, 122, 177, 189);//内圈
-		cv::vector<cv::Vec3f> circles3;
-		houghCircles(imageGray, result, circles3, 1, 1, 15, 44, 74, 74, 177);//底面
-		
 	}else
 	{
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage获取值
@@ -587,15 +642,12 @@ void MainWindow::checkBox2(int state)
 		if(ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
 		{
 			result = circleImage.clone();
+			//doFindPositiveLine(result)
+			doFindPositiveLine(result);
 		}else
 		{
-			result = image.clone();
+			result = lineImage.clone();
 		}
-		//调用画线函数
-		//
-		//
-		//
-		//
 	}else{
 		if (ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage获取值
 		{

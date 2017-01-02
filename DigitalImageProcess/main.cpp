@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
 	QObject::connect(&q, SIGNAL(showMainWindow()), &w, SLOT(showWindow()));
 	image = cv::imread("0.jpg");
 	w.setImage(image);
+	w.init();//≥ı ºªØcircleImage∫ÕlineImage
 	w.showImage(image);
 	w.show();
 	/*cv::namedWindow(windowName, CV_WINDOW_AUTOSIZE);
