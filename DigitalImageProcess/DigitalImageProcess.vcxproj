@@ -73,6 +73,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EDCircles.cpp" />
+    <ClCompile Include="EdgeDrawing.cpp" />
+    <ClCompile Include="EdgeLines.cpp" />
+    <ClCompile Include="EDPF.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow1.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_MainWindow.cpp">
@@ -110,6 +114,10 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EDCircles.h" />
+    <ClInclude Include="EdgeDrawing.h" />
+    <ClInclude Include="EdgeLines.h" />
+    <ClInclude Include="EDPF.h" />
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="GeneratedFiles\ui_MainWindow1.h" />
     <CustomBuild Include="MainWindow1.h">
