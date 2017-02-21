@@ -2,12 +2,12 @@
 
 #include<iostream>
 
-#include "opencv\cv.hpp"
-#include "opencv2\highgui\highgui.hpp"
-#include "opencv2\imgproc\imgproc.hpp"
+#include "EdgeDrawing.h"
 
-class EDPF
+class EDPF : public EdgeDrawing
 {
 	EDPF();
 	~EDPF();
+public:
+	void static HelmholtzPrinciple();//亥姆霍兹原则校验，去除不要的边缘段
 };

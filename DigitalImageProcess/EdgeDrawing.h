@@ -1,6 +1,7 @@
 #pragma once
 
 #include<iostream>
+#include<cmath>
 
 #include "opencv\cv.hpp"
 #include "opencv2\highgui\highgui.hpp"
@@ -16,7 +17,7 @@ public:
 	//G 梯度图，D 方向图，E 黑白图像
 	Mat G, D, E;
 	int GradientThreshold, AnchorThreshold;//梯度阈值和锚点选择阈值
-	int Horizon, Vertical, Color;//水平，垂直，联线颜色
+	int Horizon, Vertical, Color,AnchorColor;//水平，垂直，联线颜色
 
 	//初始化参数
 	void SetGradientThreshold(int gradientThreshold);
@@ -35,5 +36,6 @@ public:
 	void GoRight(int x, int y);
 	void GoUp(int x, int y);
 	void GoDown(int x,int y);
-	int GetPoint(int x, int y,Mat image);
+	int static GetPoint(int x, int y,Mat image);
+	void static SetPoint(int x, int y, Mat image,int value);
 };
