@@ -10,10 +10,10 @@ using namespace cv;
 
 class EdgeDrawing
 {
+public:
 	EdgeDrawing();
 	~EdgeDrawing();
 
-public:
 	//G 梯度图，D 方向图，E 黑白图像
 	Mat G, D, E;
 	int GradientThreshold, AnchorThreshold;//梯度阈值和锚点选择阈值
