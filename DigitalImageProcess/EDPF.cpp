@@ -1,6 +1,6 @@
 #include"EDPF.h"
 
-EDPF::EDPF():EdgeDrawing()
+EDPF::EDPF()
 {
 	GradientThreshold = 8.48;
 	AnchorThreshold = 0;
