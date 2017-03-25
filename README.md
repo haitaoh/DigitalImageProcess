@@ -4,7 +4,8 @@
 
 ```object{
 　　　　　entity1:{
-　　　　　　　entity2:{　　　　　　　　　...
+　　　　　　　entity2:{　　　
+             ...
 　　　　　　　　
 　　　　　　　},
  　　　　　　...
@@ -14,4 +15,5 @@
 　　　　　 ...
 　　　　　entityN:{
 　　　　　}
-　　　}```
+　　　}
+
