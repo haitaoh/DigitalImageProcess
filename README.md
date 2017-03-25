@@ -1,16 +1,27 @@
 # DigitalImageProcess
 ## 从0开始
-```object{
-　　　　　entity1:{
-　　　　　　　entity2:{
-　　　　　　　　　...
-　　　　　　　　
-　　　　　　　},
-　　　　　　　...
-　　　　　　　entityM:{
-　　　　　　　}
-　　　　　},
-　　　　　 ...
-　　　　　entityN:{
-　　　　　}
-　　　}```
+*第一种，简单jsonArray*
+　　` array[
+　　　　entity{
+　　　　　　attribute1:"value1";
+　　　　　　...
+　　　　　　attributeN:"valueN";
+　　　　},
+　　　　...
+　　　　entity{
+　　　　}
+　　]`
+*第二种，嵌套jsonArray*
+　　` array[
+　　　　entity{
+　　　　　　entity1:{
+　　　　　　　　...
+　　　　　　},
+　　　　　　...
+　　　　　　entityM:{
+　　　　　　}
+　　　　},
+　　　　...
+　　　　entityN{
+　　　　}
+　　]`
