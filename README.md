@@ -2,7 +2,7 @@
 ## 从0开始
 
 
-  ` array[
+  `array[
 　　　　entity{
 　　　　　　entity1:{
 　　　　　　　　...
