@@ -2,7 +2,8 @@
 ## 从0开始
 
 *第二种，嵌套jsonArray*
-　　` array[
+　　
+  ` array[
 　　　　entity{
 　　　　　　entity1:{
 　　　　　　　　...
