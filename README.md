@@ -2,18 +2,10 @@
 ## 从0开始
 
 
-```object{
-　　　　　entity1:{
-　　　　　　　entity2:{　　　
-             ...
-　　　　　　　　
-　　　　　　　},
- 　　　　　　...
-　　　　　　　entityM:{
-　　　　　　　}
-　　　　　},
-　　　　　 ...
-　　　　　entityN:{
-　　　　　}
-　　　}
-
+```json
+   entity{  
+　　　　attribute1:"value1";  
+　　　　attribute2:"value2";  
+　　　　...  
+　　　　attrbuteN:"valueN";  
+　　}```
