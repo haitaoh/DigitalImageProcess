@@ -73,11 +73,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Circles.cpp" />
     <ClCompile Include="EDCircles.cpp" />
     <ClCompile Include="EdgeDrawing.cpp" />
     <ClCompile Include="EdgeLines.cpp" />
     <ClCompile Include="EDPF.cpp" />
-    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow1.cpp" />
     <ClCompile Include="GeneratedFiles\qrc_MainWindow.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -114,6 +117,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Circles.h" />
     <ClInclude Include="EDCircles.h" />
     <ClInclude Include="EdgeDrawing.h" />
     <ClInclude Include="EdgeLines.h" />

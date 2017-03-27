@@ -23,7 +23,7 @@ void EdgeDrawing::SetAnchorThreshold(int anchorThreshold)
 void EdgeDrawing::SetE(Mat image)
 {
 	cv::cvtColor(image, image, CV_BGR2GRAY);//转换成灰度图
-	E = image.zeros;
+	E = image.clone();
 }
 
 void EdgeDrawing::SetHorizon(int horizon)
@@ -57,7 +57,7 @@ void EdgeDrawing::GenerateGradientAndDirection(Mat image)
 	Mat imageGray,Gx,Gy;
 	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
 	cv::GaussianBlur(imageGray, imageGray, cv::Size(5, 5), 1, 1);//高斯模糊，降噪处理
-	G = imageGray.zeros,D = imageGray.zeros;
+	G = imageGray.clone(),D = imageGray.clone();
 
 	//计算x,y方向上的导数
 	Sobel(imageGray, Gx, CV_16S, 1, 0);
