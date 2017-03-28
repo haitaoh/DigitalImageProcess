@@ -45,8 +45,9 @@ public:
 	int gmiv(float a[], int m, int n, float b[], float x[], float aa[], float eps, float u[], float v[], int ka);
 	int gniv(float a[], int m, int n, float aa[], float eps, float u[], float v[], int ka);
 	int muav(float a[], int m, int n, float u[], float v[], float eps, int ka);
-	void ppp(float a[],float e[],float s[],float v[],int m,int n);
-	void sss(float fg[], float cs[]);
+	float computeEllipseVariance(const vector<Point> points, const ellipseContent elli);//计算均方差
 
-
+	/**通过判断是不是椭圆来判断**/
+	[]circleContent getCircle();//获取圆
+	[]ellipseContent getEllipse();//获取椭圆
 };
