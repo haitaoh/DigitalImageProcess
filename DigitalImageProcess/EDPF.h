@@ -6,6 +6,7 @@
 
 class EDPF : public EdgeDrawing
 {
+public:
 	EDPF();
 	~EDPF();
 public:

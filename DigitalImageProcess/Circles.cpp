@@ -888,3 +888,80 @@ void sss(float fg[],float cs[])
 	return;
 }
 
+/**
+ * 计算椭圆均差
+ */
+float Circles::computeEllipseVariance(const vector<Point> points, const ellipseContent elli)
+{
+	
+	return 1.0f;
+}
+
+/**
+ *计算圆
+ */
+void Circles::getCircle()
+{
+	if(contour.size() <= 0)//获取contours
+	{
+		getContours();
+	}
+	int n = contour.size();
+	for(int i = 0;i < n;i++)
+	{
+		vector<Point> points = contour.at(i);
+		if (hasRepeat(points,ellipseContour)) continue;
+		if(points.size() >= circleNumberThreshold)
+		{
+			circleContent circon = circleLeastFit(points);
+			if(computeVariance(points,circon) <= 1.5)
+			{
+				circ.push_back(circon);//将圆信息保存在circ中
+				//将圆的轮廓信息保存在circleContour中
+				circleContour.push_back(points);
+			}
+		}
+	}
+}
+
+/**
+ *计算椭圆
+ */
+void Circles::getEllipse()
+{
+	if (contour.size() <= 0)//获取contours
+	{
+		getContours();
+	}
+	int n = contour.size();
+	for (int i = 0; i < n; i++)
+	{
+		vector<Point> points = contour.at(i);
+		if (hasRepeat(points,circleContour)) continue;
+		if (points.size() >= circleNumberThreshold)
+		{
+			ellipseContent ellicon = ellipseLeastFit(points);
+			if (computeEllipseVariance(points, ellicon) <= 1.5)
+			{
+				elli.push_back(ellicon);//将圆信息保存在circ中
+				//将圆的轮廓信息保存在ellipseContour中
+				ellipseContour.push_back(points);
+			}
+		}
+	}
+}
+
+/**
+ * 轮廓已经被排除
+ */
+bool Circles::hasRepeat(const vector<Point> points, const vector<vector<Point>> contour)
+{
+	if (contour.size() <= 0) return false;
+	int n = contour.size();
+	for(int i = 0;i < n;i++)
+	{
+		if (points == contour.at(i))
+			return true;
+	}
+	return false;
+}

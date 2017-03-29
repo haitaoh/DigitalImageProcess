@@ -26,8 +26,11 @@ typedef struct ellipseContent{
 class Circles
 {
 public:
+	int circleNumberThreshold = 50;
 	Mat src, img;
-	vector<vector<Point>> contour,circleContour;
+	vector<vector<Point>> contour, circleContour, ellipseContour;
+	vector<circleContent> circ;
+	vector<ellipseContent> elli;
 
 	Circles();
 	Circles(Mat img);
@@ -48,6 +51,7 @@ public:
 	float computeEllipseVariance(const vector<Point> points, const ellipseContent elli);//计算均方差
 
 	/**通过判断是不是椭圆来判断**/
-	[]circleContent getCircle();//获取圆
-	[]ellipseContent getEllipse();//获取椭圆
+	void getCircle();//获取圆
+	bool hasRepeat(const vector<Point> points, const vector<vector<Point>> contour);//判断轮廓是否已经被排除
+	void getEllipse();//获取椭圆
 };

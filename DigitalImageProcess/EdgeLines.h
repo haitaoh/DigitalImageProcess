@@ -14,6 +14,7 @@ struct Line
 
 class EdgeLines : EdgeDrawing
 {
+public:
 	EdgeLines();
 	~EdgeLines();
 
