@@ -406,7 +406,7 @@ void MainWindow::houghLines(cv::Mat &image,cv::vector<cv::Vec4i> &lines)
 }
 
 /*
-* ªÙ∑Ú‘≤±‰ªª ’“‘≤
+* ªÙ∑Ú‘≤±‰ªª ’“‘≤ ªÊ÷∆‘≤
 */
 void MainWindow::houghCircles(cv::Mat& image,cv::Mat &img,cv::vector<cv::Vec3f> &circles,
 	int dp,int min_dist,int canny_threshold_low,int canny_threshold_high,

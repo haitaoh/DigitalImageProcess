@@ -7,6 +7,7 @@ Circles::Circles()
 
 Circles::Circles(Mat img)
 {
+	this->src = img;
 	init(img);
 }
 
@@ -893,8 +894,32 @@ void sss(float fg[],float cs[])
  */
 float Circles::computeEllipseVariance(const vector<Point> points, const ellipseContent elli)
 {
-	
-	return 1.0f;
+	/*计算方法：根据公式：x=acos@ y=bsin@ @等价于xtheta(点与圆心的连线相对于a,b坐标轴的夹角)
+	 *
+	 *
+	 */
+	int size = points.size();
+	float d[65535],//拟合点到圆心距离
+		diff[65535],//拟合点到圆心距离 - 对应椭圆上点到圆心距离
+		ctheta[65535];//拟合点相对于a,b坐标轴的角度
+	float sum = 0;
+
+	for (int i = 0; i < size; i++)
+	{
+		float x = points[i].x, y = points[i].y;
+		float dx = x - elli.x, dy = y - elli.y;
+		d[i] = sqrt(dx*dx + dy*dy);
+		ctheta[i] = cvFastArctan(dy, dx);
+		if (ctheta[i] < 0)
+			ctheta[i] = -ctheta[i] + 3.1415926/2;
+		float cx = elli.a*cos(ctheta[i]),
+			cy = elli.b*sin(ctheta[i]);
+		diff[i] = d[i] - sqrt(cx*cx + cy*cy);
+		sum += diff[i] * diff[i];
+	}
+
+	sum /= size - 1;
+	return sqrt(sum);
 }
 
 /**
@@ -964,4 +989,83 @@ bool Circles::hasRepeat(const vector<Point> points, const vector<vector<Point>> 
 			return true;
 	}
 	return false;
+}
+
+/**
+ * 获取污点
+ */
+void Circles::getSpot()
+{
+	//判断轮廓是否已经获取
+	if(contour.size() <= 0 || circleContour.size() <= 0 || ellipseContour.size() <= 0)
+	{
+		return;
+	}
+	int size = contour.size();
+
+	for(int i = 0;i < size;i++)
+	{
+		vector<Point> points = contour.at(i);
+		//排除圆和椭圆轮廓
+		if (hasRepeat(points, circleContour))
+			continue;
+		if (hasRepeat(points, ellipseContour))
+			continue;
+		//将其它轮廓添加到污点轮廓
+		spotContour.push_back(points);
+	}
+}
+
+/**
+ * 绘制圆
+ */
+void Circles::drawCircle(Mat &img)
+{
+	if(circ.size() <= 0)
+	{
+		return;
+	}
+	for (int i = 0; i < circ.size(); i++)
+	{
+		Point center(cvRound(circ[i].x), cvRound(circ[i].y));
+		int radius = cvRound(circ[i].r);
+		circle(img, center, 3, Scalar(237, 62, 62), -1, 8, 0);//圆心
+		circle(img, center, radius, Scalar(0, 0, 255), 1, 8, 0);//圆边
+	}
+}
+
+/**
+ * 绘制椭圆
+ */
+void Circles::drawEllipse(Mat &img)
+{
+	if(elli.size() <= 0)
+	{
+		return;
+	}
+	for(int i = 0;i < elli.size();i++)
+	{
+		Point center(cvRound(elli[i].x), cvRound(elli[i].y));
+		Size size(cvRound(elli[i].a * 2),cvRound(elli[i].b * 2));
+		ellipse(img, center, size, elli[i].xtheta, 0, 360, Scalar(0, 0, 255), 2);
+	}
+}
+
+/**
+ * 绘制污点，用矩形将其框起来
+ */
+void Circles::drawSpot(Mat &img)
+{
+	if(spotContour.size() <= 0)
+	{
+		return;
+	}
+	for(int i = 0;i < spotContour.size();i++)
+	{
+		vector<Point> contours_ploly;
+		Rect boundRect;
+		approxPolyDP(Mat(spotContour[i]), contours_ploly, 3, true);
+		boundRect = boundingRect(Mat(contours_ploly));
+		rectangle(img, boundRect.tl(), boundRect.br(), Scalar(255, 255, 0), 2);
+	}
 }

@@ -27,8 +27,9 @@ class Circles
 {
 public:
 	int circleNumberThreshold = 50;
-	Mat src, img;
-	vector<vector<Point>> contour, circleContour, ellipseContour;
+	Mat src,//输入图像
+		img;//做预处理图像
+	vector<vector<Point>> contour, circleContour, ellipseContour,spotContour;
 	vector<circleContent> circ;
 	vector<ellipseContent> elli;
 
@@ -54,4 +55,10 @@ public:
 	void getCircle();//获取圆
 	bool hasRepeat(const vector<Point> points, const vector<vector<Point>> contour);//判断轮廓是否已经被排除
 	void getEllipse();//获取椭圆
+	void getSpot();//获取污点
+
+	/**绘制图形方法**/
+	void drawCircle(Mat &img);//绘制圆
+	void drawEllipse(Mat &img);//绘制椭圆
+	void drawSpot(Mat &img);//绘制污点
 };
