@@ -26,7 +26,7 @@ typedef struct ellipseContent{
 class Circles
 {
 public:
-	int circleNumberThreshold = 50;
+	int circleNumberThreshold = 150;
 	Mat src,//输入图像
 		img;//做预处理图像
 	vector<vector<Point>> contour, circleContour, ellipseContour,spotContour;
@@ -53,9 +53,9 @@ public:
 
 	/**通过判断是不是椭圆来判断**/
 	void getCircle();//获取圆
-	bool hasRepeat(const vector<Point> points, const vector<vector<Point>> contour);//判断轮廓是否已经被排除
 	void getEllipse();//获取椭圆
 	void getSpot();//获取污点
+	bool hasRepeat(const vector<Point> points, const vector<vector<Point>> contour);//判断轮廓是否已经被排除
 
 	/**绘制图形方法**/
 	void drawCircle(Mat &img);//绘制圆

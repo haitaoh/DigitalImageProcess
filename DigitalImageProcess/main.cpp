@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 	w.init();//≥ı ºªØcircleImage∫ÕlineImage
 	w.showImage(image);
 	w.show();
+
 	/*cv::namedWindow(windowName, CV_WINDOW_AUTOSIZE);
 	cv::createTrackbar(trackbarMinDist, windowName, &min_dist, max_min_dist, HoughCircles);
 	cv::createTrackbar(trackbarCannyThresholdLow, windowName, &canny_threshold_low, max_canny_threshold_low, HoughCircles);
@@ -56,6 +57,7 @@ int main(int argc, char *argv[])
 	cv::createTrackbar(CannyThresholdLow, windowName, &canny_threshold_low, max_canny_threshold_low, Canny);
 	cv::createTrackbar(CannyThresholdHigh, windowName, &canny_threshold_high, max_canny_threshold_high, Canny);
 	Canny(1, 0);*/
+
     return a.exec();
 }
 

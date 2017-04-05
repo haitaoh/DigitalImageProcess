@@ -12,6 +12,7 @@
 #include "opencv2\imgproc\imgproc.hpp"
 
 #include<time.h>
+#include"Circles.h"
 
 class MainWindow : public QMainWindow
 {
@@ -34,6 +35,7 @@ public:
 	void doFindPositiveLine(cv::Mat &image);
 
 private://申明私有变量
+	Circles circles;
 	Ui::MainWindowClass ui;
 	cv::Mat image,circleImage,lineImage;
 	QString imageFilePath;
