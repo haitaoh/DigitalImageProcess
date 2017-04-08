@@ -37,21 +37,11 @@ void MainWindow::init()
 		circles.getCircle();//获取圆
 		circles.getEllipse();//获取椭圆
 		circles.getSpot();//获取污点
-		/*for(int i = 0;i < circles.circ.size();i++)
-		{
-			std::cout << "(" << circles.circ[i].x << ","
-				<< circles.circ[i].y << ") r=" << circles.circ[i].r << std::endl;
-		}
-		std::cout << "ellipse content" << std::endl;
-		std::cout << "ellipse size is: " << circles.elli.size() << std::endl;
-		for(int i = 0;i < circles.elli.size();i ++)
-		{
-			std::cout << "(" << circles.elli[i].x << "," << circles.elli[i].y
-				<< ") " << "a=" << circles.elli[i].a << " b=" << circles.elli[i].b
-				<< " xtheta=" << circles.elli[i].xtheta << std::endl;
-		}
-		std::cout << "spot content" << std::endl;
-		std::cout << "spot size is: " << circles.spotContour.size() << std::endl;*/
+		//计算circleImage和lineImage
+		circles.drawCircle(circleImage);
+		circles.drawEllipse(circleImage);
+		circles.drawSpot(circleImage);
+
 	}
 }
 
@@ -634,7 +624,7 @@ void MainWindow::checkBox1(int state)
 		}
 		else
 		{
-//			result = circleImage.clone();
+			result = circleImage.clone();
 			/*result = image.clone();
 			for (int i = 0; i < circles.contour.size(); i++) {
 				drawContours(result, circles.contour, i, Scalar(0, 0, 255));
@@ -679,11 +669,11 @@ void MainWindow::checkBox2(int state)
 	}else{
 		if (ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage获取值
 		{
-			result = circleImage;
+			result = circleImage.clone();
 		}
 		else
 		{
-			result = image;
+			result = image.clone();
 		}
 	}
 	if (result.data) showImage(result);//当数据不为空，显示图片

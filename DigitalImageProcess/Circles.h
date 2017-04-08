@@ -26,7 +26,9 @@ typedef struct ellipseContent{
 class Circles
 {
 public:
-	int circleNumberThreshold = 150;
+	int circleNumberThreshold = 150,
+		ellipseNumberThreshold = 150,
+		spotNumberThreshold = 30;
 	Mat src,//输入图像
 		img;//做预处理图像
 	vector<vector<Point>> contour, circleContour, ellipseContour,spotContour;

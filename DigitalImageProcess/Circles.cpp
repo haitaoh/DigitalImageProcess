@@ -255,7 +255,7 @@ ellipseContent Circles::ellipseLeastFit(const vector<Point> points)
 	delete[]B3;
 	delete[]x1;
 	delete[]x2;
-	
+
 	return ellipsec;
 }
 
@@ -337,7 +337,7 @@ int Circles::muav(float a[], int m, int n, float u[], float v[], float eps, int 
 	int i, j, k, l, it, ll, kk, ix, iy, mm, nn, iz, m1, ks;
 	float d, dd, t, sm, sm1, em1, sk, ek, b, c, shh, fg[2], cs[2];
 	float *s, *e, *w;
-	 
+
 	void ppp(float a[], float e[], float s[], float v[], int m, int n);
 	void sss(float fg[], float cs[]);
 
@@ -907,13 +907,15 @@ void Circles::getSpot()
 	for (int i = 0; i < size; i++)
 	{
 		vector<Point> points = contour.at(i);
-		//排除圆和椭圆轮廓
-		if (hasRepeat(points, circleContour))
-			continue;
-		if (hasRepeat(points, ellipseContour))
-			continue;
-		//将其它轮廓添加到污点轮廓
-		spotContour.push_back(points);
+		if (points.size() > spotNumberThreshold) {
+			//排除圆和椭圆轮廓
+			if (hasRepeat(points, circleContour))
+				continue;
+			if (hasRepeat(points, ellipseContour))
+				continue;
+			//将其它轮廓添加到污点轮廓
+			spotContour.push_back(points);
+		}
 	}
 }
 

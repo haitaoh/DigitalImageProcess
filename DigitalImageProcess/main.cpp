@@ -23,7 +23,6 @@ void HoughCircles(int,void*);*/
  * ÄÚÈ¦£º1 15 44 122 177 189
  * µ×Ãæ£º1 15 44 74 74 177
  */
-
 /*int canny_threshold_low = 15, max_canny_threshold_low = 300;
 int canny_threshold_high = 44, max_canny_threshold_high = 300;
 char *windowName = "hehe";
