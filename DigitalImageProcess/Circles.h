@@ -23,17 +23,35 @@ typedef struct ellipseContent{
 	double xtheta;//相对于x轴的夹角
 }ellipseContent;
 
+typedef struct circleArcContent{
+	circleContent circ;
+	vector<Point> points;
+	bool flag;//记录是否使用过，默认为false
+}circleArcContent;
+
+typedef struct ellipseArcContent{
+	ellipseContent elli;
+	vector<Point> points;
+	bool flag;//记录是否使用过，默认为false
+}ellipseArcContent;
+
 class Circles
 {
 public:
 	int circleNumberThreshold = 150,
 		ellipseNumberThreshold = 150,
-		spotNumberThreshold = 30;
+		spotNumberThreshold = 30,
+		minThreshold = 30;
 	Mat src,//输入图像
 		img;//做预处理图像
-	vector<vector<Point>> contour, circleContour, ellipseContour,spotContour;
-	vector<circleContent> circ;
-	vector<ellipseContent> elli;
+	vector<vector<Point>> contour, circleContour, ellipseContour, spotContour,
+		circleArcContour,ellipseArcContour;
+	vector<vector<Point>>	circleArcCandidateContour,//圆弧候选轮廓
+		ellipseArcCandidateContour;//椭圆弧候选轮廓
+	vector<circleContent> circ;//存入圆信息
+	vector<ellipseContent> elli;//存入椭圆信息
+	vector<ellipseArcContent> ellipseArcs;//圆弧信息
+	vector<circleArcContent> circleArcs;//椭圆弧信息
 
 	Circles();
 	Circles(Mat img);
@@ -63,4 +81,8 @@ public:
 	void drawCircle(Mat &img);//绘制圆
 	void drawEllipse(Mat &img);//绘制椭圆
 	void drawSpot(Mat &img);//绘制污点
+
+	/**通过圆弧和椭圆弧找圆和椭圆**/
+	void getCircleFromArc();
+	void getEllipseFromArc();
 };

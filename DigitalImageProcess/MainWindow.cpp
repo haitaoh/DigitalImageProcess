@@ -32,10 +32,12 @@ void MainWindow::init()
 		if(lineImage.data)
 			doFindPositiveLine(lineImage);*/
 
-		//初始化circles
+		//初始化circles,必须按照此方法的执行顺序。
 		circles = Circles(image);
 		circles.getCircle();//获取圆
 		circles.getEllipse();//获取椭圆
+		circles.getCircleFromArc();
+		circles.getEllipseFromArc();
 		circles.getSpot();//获取污点
 		//计算circleImage和lineImage
 		circles.drawCircle(circleImage);
@@ -625,13 +627,11 @@ void MainWindow::checkBox1(int state)
 		else
 		{
 			result = circleImage.clone();
-			/*result = image.clone();
-			for (int i = 0; i < circles.contour.size(); i++) {
-				drawContours(result, circles.contour, i, Scalar(0, 0, 255));
+			
+			/*for (int i = 0; i < circles.circleArcContour.size(); i++) {
+				if(circles.circleArcContour[i].size() > 30)
+					drawContours(result, circles.circleArcContour, i, Scalar(0, 0, 255));
 			}*/
-			circles.drawCircle(result);
-			circles.drawEllipse(result);
-			circles.drawSpot(result);
 		}
 	}else
 	{

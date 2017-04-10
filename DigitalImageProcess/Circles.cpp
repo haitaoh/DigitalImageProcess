@@ -240,11 +240,12 @@ ellipseContent Circles::ellipseLeastFit(const vector<Point> points)
 		ellipsec.b = temp;
 	}
 
-	ellipsec.xtheta = (float)(90 + rp[4] * 180 / 3.1415926);
-	if (ellipsec.xtheta < -180)
-		ellipsec.xtheta += 360;
-	if (ellipsec.xtheta > 360)
-		ellipsec.xtheta -= 360;
+	//与x轴夹角，用圆周角度数表示
+	ellipsec.xtheta = (float)(3.1415926 / 2 + rp[4]);
+	if (ellipsec.xtheta < -3.1415926)
+		ellipsec.xtheta += 3.1415926 * 2;
+	if (ellipsec.xtheta > 3.1415926 * 2)
+		ellipsec.xtheta -= 3.1415926 * 2;
 
 	//释放内存
 	delete[]A1;
@@ -810,8 +811,7 @@ float Circles::computeEllipseVariance(const vector<Point> points, const ellipseC
 		float dx = x - elli.x, dy = y - elli.y;
 		d[i] = sqrt(dx*dx + dy*dy);
 		ctheta[i] = cvFastArctan(dy, dx);
-		if (ctheta[i] < 0)
-			ctheta[i] = -ctheta[i] + 3.1415926 / 2;
+		ctheta[i] = ctheta[i] - elli.xtheta;
 		float cx = elli.a*cos(ctheta[i]),
 			cy = elli.b*sin(ctheta[i]);
 		diff[i] = d[i] - sqrt(cx*cx + cy*cy);
@@ -836,14 +836,24 @@ void Circles::getCircle()
 	{
 		vector<Point> points = contour.at(i);
 		if (hasRepeat(points, ellipseContour)) continue;
-		if (points.size() >= circleNumberThreshold)
+		if (points.size() >= minThreshold)
 		{
 			circleContent circon = circleLeastFit(points);
 			if (computeVariance(points, circon) <= 1.5f)
 			{
-				circ.push_back(circon);//将圆信息保存在circ中
-				//将圆的轮廓信息保存在circleContour中
-				circleContour.push_back(points);
+				if (points.size() >= circleNumberThreshold) {
+					circ.push_back(circon);//将圆信息保存在circ中
+					//将圆的轮廓信息保存在circleContour中
+					circleContour.push_back(points);
+				}
+				else
+				{//加入圆弧候选
+					circleArcContent cirAc;
+					cirAc.circ = circon;
+					cirAc.points = points;
+					cirAc.flag = false;
+					circleArcs.push_back(cirAc);
+				}
 			}
 		}
 	}
@@ -863,15 +873,25 @@ void Circles::getEllipse()
 	{
 		vector<Point> points = contour.at(i);
 		if (hasRepeat(points, circleContour)) continue;
-		if (points.size() >= circleNumberThreshold)
+		if (points.size() >= minThreshold)
 		{
 			ellipseContent ellicon = ellipseLeastFit(points);
 			float varianceValue = computeEllipseVariance(points, ellicon);
 			if (varianceValue <= 1.5f)
 			{
-				elli.push_back(ellicon);//将圆信息保存在circ中
-				//将圆的轮廓信息保存在ellipseContour中
-				ellipseContour.push_back(points);
+				if (points.size() >= ellipseNumberThreshold) {
+					elli.push_back(ellicon);//将圆信息保存在circ中
+					//将圆的轮廓信息保存在ellipseContour中
+					ellipseContour.push_back(points);
+				}
+				else
+				{//加入椭圆弧候选
+					ellipseArcContent elliAc;
+					elliAc.elli = ellicon;
+					elliAc.points = points;
+					elliAc.flag = false;
+					ellipseArcs.push_back(elliAc);
+				}
 			}
 		}
 	}
@@ -913,6 +933,10 @@ void Circles::getSpot()
 				continue;
 			if (hasRepeat(points, ellipseContour))
 				continue;
+			if (hasRepeat(points, circleArcContour))
+				continue;
+			if (hasRepeat(points, ellipseArcContour))
+				continue;
 			//将其它轮廓添加到污点轮廓
 			spotContour.push_back(points);
 		}
@@ -933,7 +957,7 @@ void Circles::drawCircle(Mat &img)
 		Point center(cvRound(circ[i].x), cvRound(circ[i].y));
 		int radius = cvRound(circ[i].r);
 		circle(img, center, 3, Scalar(237, 62, 62), -1, 8, 0);//圆心
-		circle(img, center, radius, Scalar(255, 0, 0), 1, 8, 0);//圆边
+		circle(img, center, radius, Scalar(255, 0, 0), 1);//圆边
 	}
 }
 
@@ -949,8 +973,8 @@ void Circles::drawEllipse(Mat &img)
 	for (int i = 0; i < elli.size(); i++)
 	{
 		Point center(cvRound(elli[i].x), cvRound(elli[i].y));
-		Size size(cvRound(elli[i].a * 2), cvRound(elli[i].b * 2));
-		ellipse(img, center, size, elli[i].xtheta, 0, 360, Scalar(0, 0, 255), 2);
+		Size size(cvRound(elli[i].a), cvRound(elli[i].b));
+		ellipse(img, center, size, elli[i].xtheta, 0, 360, Scalar(0, 0, 255), 1);
 	}
 }
 
@@ -970,5 +994,129 @@ void Circles::drawSpot(Mat &img)
 		approxPolyDP(Mat(spotContour[i]), contours_ploly, 3, true);
 		boundRect = boundingRect(Mat(contours_ploly));
 		rectangle(img, boundRect.tl(), boundRect.br(), Scalar(255, 255, 0), 2);
+	}
+}
+
+/**
+ * 通过圆弧获取圆
+ */
+void Circles::getCircleFromArc()
+{
+	if (circleArcs.size() <= 0)
+		return;
+
+	int size = circleArcs.size();
+	for (int i = 0; i < size; i++)
+	{
+		if (!circleArcs[i].flag)
+		{
+			vector<Point> points;
+			circleContent cir;
+			for (int j = i; j < size; j++)
+			{
+				if (!circleArcs[j].flag && !hasRepeat(circleArcs[j].points, ellipseContour))//如果没有被使用过
+				{
+					if (points.size() == 0) {
+						points = circleArcs[j].points;
+						cir = circleArcs[j].circ;
+						circleArcs[j].flag = true;
+						continue;
+					}
+					//比较后来的圆弧和第一个圆弧是否在一个误差区间内
+					int rs = cir.r;//标准弧的半径
+					int rt = rs* 0.25f,//误差圆心范围
+						rArcMin = rs* 0.75f,//误差半径范围
+						rArcMax = rs*1.25f;
+					circleContent cc = circleArcs[j].circ;
+					float ds = computeDistance(Point(cc.x, cc.y), cir);
+					if (ds <= rt)
+					{
+						float dt = fabs(cc.r - ds);
+						if (dt >= rArcMin && dt <= rArcMax)
+						{
+							vector<Point> pp = circleArcs[j].points;
+							if (hasRepeat(points, circleArcContour))//如果没有加入第一个弧，则加入
+								circleArcContour.push_back(points);
+							circleArcContour.push_back(pp);
+							for (auto k = 0; k < pp.size(); k++)
+							{
+								points.push_back(pp[k]);
+							}
+							circleArcs[j].flag = true;
+						}
+					}
+				}
+			}
+			if (points.size() >= circleNumberThreshold) {
+				circleContent circon = circleLeastFit(points);
+				if (computeVariance(points, circon) <= 1.5f)
+				{
+					circ.push_back(circon);//将圆信息保存在circ中
+				}
+			}
+		}
+	}
+}
+
+/**
+ * 通过椭圆弧获取圆
+ */
+void Circles::getEllipseFromArc()
+{
+	if (ellipseArcs.size() <= 0)
+		return;
+
+	int size = ellipseArcs.size();
+	for (int i = 0; i < size; i++)
+	{
+		if (!ellipseArcs[i].flag)
+		{
+			vector<Point> points;
+			ellipseContent ellipseCon;
+			for (int j = i; j < size; j++)
+			{
+				if (!ellipseArcs[j].flag && !hasRepeat(ellipseArcs[j].points, circleContour)
+					&& !hasRepeat(ellipseArcs[j].points, circleArcContour))//如果没有被使用过
+				{
+					if (points.size() == 0) {
+						points = ellipseArcs[j].points;
+						ellipseCon = ellipseArcs[j].elli;
+						ellipseArcs[j].flag = true;
+						continue;
+					}
+					//比较后来的椭圆弧和第一个椭圆弧是否在一个误差区间内
+					int ra = ellipseCon.a;//标准弧的半径
+					int rt = ra* 0.5f,//误差圆心范围
+						rArcMin = rt,//误差半径范围
+						rArcMax = ra*1.5f;
+					ellipseContent ec = ellipseArcs[j].elli;
+					float dx = ec.x - ellipseCon.x, dy = ec.y - ellipseCon.y;
+					float ds = sqrt(dx*dx + dy*dy);
+					if (ds <= rt)
+					{
+						float dt = fabs(ellipseCon.a - ds);
+						if (dt >= rArcMin && dt <= rArcMax)
+						{
+							vector<Point> pp = ellipseArcs[j].points;
+							if (hasRepeat(points, ellipseArcContour))//如果没有加入第一个弧，则加入
+								ellipseArcContour.push_back(points);
+							ellipseArcContour.push_back(pp);
+							for (auto k = 0; k < pp.size(); k++)
+							{
+								points.push_back(pp[k]);
+							}
+							ellipseArcs[j].flag = true;
+						}
+					}
+				}
+			}
+			if (points.size() >= ellipseNumberThreshold) {
+				ellipseContent ellicon = ellipseLeastFit(points);
+				if (computeEllipseVariance(points, ellicon) <= 1.5f)
+				{
+					elli.push_back(ellicon);//将圆信息保存在circ中
+				}
+			}
+		}
 	}
 }
