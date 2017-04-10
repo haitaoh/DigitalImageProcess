@@ -9,27 +9,29 @@
 
 using namespace cv;
 
-typedef struct circleContent{
+typedef struct circleContent {
 	double x;//圆心坐标
 	double y;
 	double r;//半径
+	double compatibility;//找到圆的契合度
 }circleContent;
 
-typedef struct ellipseContent{
+typedef struct ellipseContent {
 	double x;//圆心坐标
 	double y;
 	double a;//a轴
 	double b;//b轴
 	double xtheta;//相对于x轴的夹角
+	double compatibility;//找到椭圆的契合度
 }ellipseContent;
 
-typedef struct circleArcContent{
+typedef struct circleArcContent {
 	circleContent circ;
 	vector<Point> points;
 	bool flag;//记录是否使用过，默认为false
 }circleArcContent;
 
-typedef struct ellipseArcContent{
+typedef struct ellipseArcContent {
 	ellipseContent elli;
 	vector<Point> points;
 	bool flag;//记录是否使用过，默认为false
@@ -45,7 +47,7 @@ public:
 	Mat src,//输入图像
 		img;//做预处理图像
 	vector<vector<Point>> contour, circleContour, ellipseContour, spotContour,
-		circleArcContour,ellipseArcContour;
+		circleArcContour, ellipseArcContour;
 	vector<vector<Point>>	circleArcCandidateContour,//圆弧候选轮廓
 		ellipseArcCandidateContour;//椭圆弧候选轮廓
 	vector<circleContent> circ;//存入圆信息
@@ -59,10 +61,10 @@ public:
 
 	void init(Mat img);//初始化，图像转换
 	void getContours();//获取contour
-	
+
 	circleContent circleLeastFit(const vector<Point> points);//最小二乘拟合圆
 	float computeVariance(const vector<Point> points, const circleContent circ);//计算均方差
-	float computeDistance(const Point point,const circleContent circ);//计算点到圆心的距离
+	float computeDistance(const Point point, const circleContent circ);//计算点到圆心的距离
 
 	ellipseContent ellipseLeastFit(const vector<Point> points);//奇异值分解 最小二乘拟合椭圆
 	int SVD(float *a, int m, int n, float b[], float x[], float esp);
@@ -85,4 +87,5 @@ public:
 	/**通过圆弧和椭圆弧找圆和椭圆**/
 	void getCircleFromArc();
 	void getEllipseFromArc();
+
 };

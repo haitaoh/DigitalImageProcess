@@ -4,7 +4,7 @@ MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	connect(ui.openAction,SIGNAL(triggered()),this,SLOT(openImage()));
+	connect(ui.openAction, SIGNAL(triggered()), this, SLOT(openImage()));
 	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
 	connect(ui.positiveButton, SIGNAL(clicked()), this, SLOT(positiveButtonClicked()));
 	connect(ui.negativeButton, SIGNAL(clicked()), this, SLOT(negativeButtonClicked()));
@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
  */
 void MainWindow::init()
 {
-	if(image.data)//如果image有数据，利用它初始化circleImage和lineImage
+	if (image.data)//如果image有数据，利用它初始化circleImage和lineImage
 	{
 		circleImage = image.clone();
 		lineImage = image.clone();
@@ -32,7 +32,7 @@ void MainWindow::init()
 		if(lineImage.data)
 			doFindPositiveLine(lineImage);*/
 
-		//初始化circles,必须按照此方法的执行顺序。
+			//初始化circles,必须按照此方法的执行顺序。
 		circles = Circles(image);
 		circles.getCircle();//获取圆
 		circles.getEllipse();//获取椭圆
@@ -58,11 +58,11 @@ static CV_IMPLEMENT_QSORT_EX(icvHoughSortDescent32s, int, hough_cmp_gt, const in
 /*
  * 霍夫梯度法
  */
-static void
-icvHoughCirclesGradient(CvMat* img, float dp, float min_dist,
-	int min_radius, int max_radius,
-	int canny_threshold_low, int canny_threshold_high, int acc_threshold,
-	CvSeq* circles, int circles_max)
+	static void
+	icvHoughCirclesGradient(CvMat* img, float dp, float min_dist,
+		int min_radius, int max_radius,
+		int canny_threshold_low, int canny_threshold_high, int acc_threshold,
+		CvSeq* circles, int circles_max)
 {
 	const int SHIFT = 10, ONE = 1 << SHIFT;
 	cv::Ptr<CvMat> dx, dy;
@@ -300,7 +300,7 @@ cvHoughCircles(CvArr* src_image, void* circle_storage,
 
 	if (dp <= 0 || min_dist <= 0 || canny_threshold_l <= 0 || canny_threshold_h <= 0 || acc_threshold <= 0)
 		CV_Error(CV_StsOutOfRange, "dp, min_dist, canny_threshold and acc_threshold must be all positive numbers");
-	
+
 	//确保圆半径合格
 	min_radius = MAX(min_radius, 0);
 	if (max_radius <= 0)
@@ -336,7 +336,7 @@ cvHoughCircles(CvArr* src_image, void* circle_storage,
 	{
 	case CV_HOUGH_GRADIENT:
 		icvHoughCirclesGradient(img, (float)dp, (float)min_dist,
-			min_radius, max_radius, canny_threshold_low,canny_threshold_high,
+			min_radius, max_radius, canny_threshold_low, canny_threshold_high,
 			acc_threshold, circles, circles_max);
 		break;
 	default:
@@ -405,7 +405,7 @@ std::string MainWindow::longToString(long l)
 /*
  *霍夫线变换 找接边
  */
-void MainWindow::houghLines(cv::Mat &image,cv::vector<cv::Vec4i> &lines)
+void MainWindow::houghLines(cv::Mat &image, cv::vector<cv::Vec4i> &lines)
 {
 	cv::Mat dst;
 	pretreatmentImage(image, dst);
@@ -421,9 +421,9 @@ void MainWindow::houghLines(cv::Mat &image,cv::vector<cv::Vec4i> &lines)
 /*
 * 霍夫圆变换 找圆 绘制圆
 */
-void MainWindow::houghCircles(cv::Mat& image,cv::Mat &img,cv::vector<cv::Vec3f> &circles,
-	int dp,int min_dist,int canny_threshold_low,int canny_threshold_high,
-	int acc_threshold,int min_radius,int max_radius)
+void MainWindow::houghCircles(cv::Mat& image, cv::Mat &img, cv::vector<cv::Vec3f> &circles,
+	int dp, int min_dist, int canny_threshold_low, int canny_threshold_high,
+	int acc_threshold, int min_radius, int max_radius)
 {
 	cv::Scalar centerScalar(237, 62, 62), radiusScalar(0, 0, 255);
 	int centerRadius = 3;
@@ -446,14 +446,14 @@ void MainWindow::findContours(cv::Mat& image, cv::vector<cv::vector<cv::Point>> 
 	cv::Mat imageGray;
 	cv::vector<cv::Vec4i> hierarchy;
 	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
-	cv::GaussianBlur(imageGray, imageGray, cv::Size(5,5),1,1);//模糊降噪
+	cv::GaussianBlur(imageGray, imageGray, cv::Size(5, 5), 1, 1);//模糊降噪
 	cv::Canny(imageGray, imageGray, 10, 40);
 	cv::threshold(imageGray, imageGray, 128, 255, cv::THRESH_BINARY);//阈值化检测，转换为二值对象
-	cv::findContours(imageGray,contours,hierarchy,CV_RETR_TREE,CV_CHAIN_APPROX_SIMPLE, cv::Point(0,0));
-	for(int i = 0;i < contours.size();i++)
+	cv::findContours(imageGray, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
+	for (int i = 0; i < contours.size(); i++)
 	{
-		drawContours(image, contours, i, cv::Scalar(255,255,255), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
-		if(contours[i].size() > 5)//必须大于等于6
+		drawContours(image, contours, i, cv::Scalar(255, 255, 255), 1, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+		if (contours[i].size() > 5)//必须大于等于6
 		{
 			cv::ellipse(image, fitEllipse(contours[i]), cv::Scalar(255, 255, 255), 2, 8);
 		}
@@ -531,22 +531,22 @@ void MainWindow::doFindPositiveLine(cv::Mat &image)
 void MainWindow::openImage()
 {
 	//调用系统资源管理器，打开文件。
-	QString filePath = QFileDialog::getOpenFileName(this ,tr("Open Image"),".",tr("Image Files (*.jpg *.png)"));
+	QString filePath = QFileDialog::getOpenFileName(this, tr("Open Image"), ".", tr("Image Files (*.jpg *.png)"));
 	if (filePath.length() == 0) return;
 	imageFilePath = filePath;//赋值，为保存文件
 	std::string imagePath = filePath.toStdString();
 	image = cv::imread(imagePath);
-	if(!image.data) return;
+	if (!image.data) return;
 	lineImage = image.clone();//copy整个对象，而不是信息头
 	circleImage = image.clone();
-/*	std::clock_t start, end;
-	start = std::clock();
-	houghCircles(image);
-	findContours(image);
-	end = std::clock();
-	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
-	cv::Scalar scalar(255,122,122);
-	cv::putText(image, printMessage, cv::Point(0, image.cols/2), 1, 1.0, scalar, 1);*/
+	/*	std::clock_t start, end;
+		start = std::clock();
+		houghCircles(image);
+		findContours(image);
+		end = std::clock();
+		std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
+		cv::Scalar scalar(255,122,122);
+		cv::putText(image, printMessage, cv::Point(0, image.cols/2), 1, 1.0, scalar, 1);*/
 	showImage(image);
 }
 
@@ -568,11 +568,12 @@ void MainWindow::saveImage()
 	if (!suffix.isEmpty() && !setFilter.contains(selectFilter))
 		selectFilter = "*.*";
 	QFile file(saveFileName);
-	if (selectFilter.compare("*.*") && QFileInfo(saveFileName).suffix().isEmpty()) saveFileName = saveFileName + selectFilter.remove(0,1);
-	if(!file.copy(imageFilePath,saveFileName))//如果copy不成功
+	if (selectFilter.compare("*.*") && QFileInfo(saveFileName).suffix().isEmpty()) saveFileName = saveFileName + selectFilter.remove(0, 1);
+	if (!file.copy(imageFilePath, saveFileName))//如果copy不成功
 	{
 		QMessageBox::information(this, "Tips", "save file failed!", QMessageBox::Ok, QMessageBox::Ok);
-	}else
+	}
+	else
 	{
 		QMessageBox::information(this, "Tips", "save file succeed!", QMessageBox::Ok, QMessageBox::Ok);
 	}
@@ -610,7 +611,7 @@ void MainWindow::checkBox1(int state)
 {
 	/* checkBox1 == 检测圆   *\
 	\* checkBox2 == 检测接边 */
-	if(state == Qt::Checked)//如果checkBox1被勾选
+	if (state == Qt::Checked)//如果checkBox1被勾选
 	{
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage克隆
 		{
@@ -627,13 +628,14 @@ void MainWindow::checkBox1(int state)
 		else
 		{
 			result = circleImage.clone();
-			
+
 			/*for (int i = 0; i < circles.circleArcContour.size(); i++) {
 				if(circles.circleArcContour[i].size() > 30)
 					drawContours(result, circles.circleArcContour, i, Scalar(0, 0, 255));
 			}*/
 		}
-	}else
+	}
+	else
 	{
 		if (ui.checkBox2->isChecked())//如果checkBox2被勾选,image从lineImage获取值
 		{
@@ -655,18 +657,20 @@ void MainWindow::checkBox2(int state)
 {
 	/* checkBox1 == 检测圆   *\
 	\* checkBox2 == 检测接边 */
-	if(state == Qt::Checked)//如果checkBox2被勾选
+	if (state == Qt::Checked)//如果checkBox2被勾选
 	{
-		if(ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
+		if (ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage克隆，因为mat数据结构的特殊性，clone不会对原数据修改
 		{
 			result = circleImage.clone();
 			//doFindPositiveLine(result)
 			doFindPositiveLine(result);
-		}else
+		}
+		else
 		{
 			result = lineImage.clone();
 		}
-	}else{
+	}
+	else {
 		if (ui.checkBox1->isChecked())//如果checkBox1被勾选,image从circleImage获取值
 		{
 			result = circleImage.clone();

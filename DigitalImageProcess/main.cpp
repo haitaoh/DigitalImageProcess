@@ -2,7 +2,7 @@
 #include <QtWidgets/QApplication>
 #include "MainWindow1.h"
 
-cv::Mat image,imageShow;
+cv::Mat image, imageShow;
 
 /*char *windowName = "hehe";
 char *trackbarMinDist = "min_dist";
@@ -18,21 +18,21 @@ int param2 = 115,max_param2 = 400;
 int min_radius = 68, max_min_radius = 1000;
 int max_radius = 189, max_max_radius = 1000;
 void HoughCircles(int,void*);*/
-/* 
+/*
  * 外圈：1 15 44 115 70 189
  * 内圈：1 15 44 122 177 189
  * 底面：1 15 44 74 74 177
  */
-/*int canny_threshold_low = 15, max_canny_threshold_low = 300;
-int canny_threshold_high = 44, max_canny_threshold_high = 300;
-char *windowName = "hehe";
-char *CannyThresholdLow = "CannyThresholdLow";
-char *CannyThresholdHigh = "CannyThresholdHigh";
-void Canny(int, void*);*/
+ /*int canny_threshold_low = 15, max_canny_threshold_low = 300;
+ int canny_threshold_high = 44, max_canny_threshold_high = 300;
+ char *windowName = "hehe";
+ char *CannyThresholdLow = "CannyThresholdLow";
+ char *CannyThresholdHigh = "CannyThresholdHigh";
+ void Canny(int, void*);*/
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+	QApplication a(argc, argv);
 	MainWindow w;
 	MainWindow1 q;
 	//界面切换信号、槽函数
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	cv::createTrackbar(CannyThresholdHigh, windowName, &canny_threshold_high, max_canny_threshold_high, Canny);
 	Canny(1, 0);*/
 
-    return a.exec();
+	return a.exec();
 }
 
 /*void Canny(int,void*)

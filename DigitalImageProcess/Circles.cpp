@@ -842,6 +842,7 @@ void Circles::getCircle()
 			if (computeVariance(points, circon) <= 1.5f)
 			{
 				if (points.size() >= circleNumberThreshold) {
+					circon.compatibility = contourArea(contour[i])*0.5f + arcLength(contour[i], true)*0.5f;
 					circ.push_back(circon);//将圆信息保存在circ中
 					//将圆的轮廓信息保存在circleContour中
 					circleContour.push_back(points);
@@ -880,6 +881,7 @@ void Circles::getEllipse()
 			if (varianceValue <= 1.5f)
 			{
 				if (points.size() >= ellipseNumberThreshold) {
+					ellicon.compatibility = contourArea(contour[i])*0.5f + arcLength(contour[i], true)*0.5f;
 					elli.push_back(ellicon);//将圆信息保存在circ中
 					//将圆的轮廓信息保存在ellipseContour中
 					ellipseContour.push_back(points);
