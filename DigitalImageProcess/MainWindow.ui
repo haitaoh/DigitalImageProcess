@@ -247,35 +247,6 @@ QCheckBox::indicator::checked {
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox2">
-       <property name="font">
-        <font>
-         <family>Microsoft YaHei UI</family>
-         <pointsize>-1</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QCheckBox{
-	font-size:18px;
-font-family:Microsoft YaHei UI;
-}
-QCheckBox::indicator { 
-    width: 26px;
-    height: 50px;
-}
-QCheckBox::indicator::unchecked {   
-    image: url(images/unchecked.png);
-}
-QCheckBox::indicator::checked { 
-    image: url(images/checked.png);
-}</string>
-       </property>
-       <property name="text">
-        <string>检测接边</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>

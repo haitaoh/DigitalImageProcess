@@ -8,26 +8,97 @@ MainWindow1::MainWindow1(QWidget *parent)
 	connect(ui.saveAction, SIGNAL(triggered()), this, SLOT(saveImage()));
 	connect(ui.positiveButton, SIGNAL(clicked()), this, SLOT(positiveButtonClicked()));
 	connect(ui.negativeButton, SIGNAL(clicked()), this, SLOT(negativeButtonClicked()));
+	connect(ui.checkBox1, SIGNAL(stateChanged(int)), this, SLOT(checkBox1(int)));
+	label = 0;//初始化指针，为之后每次清空qlabel对象做准备
 }
 
 MainWindow1::~MainWindow1()
 {
-
+	if (label) delete label;
 }
 
 /*
-* long 类型转 std::string 类型
+* 初始化
 */
-std::string MainWindow1::longToString(long l)
+void MainWindow1::init()
 {
-	std::ostringstream os;
-	os << l;
-	std::string result;
-	std::istringstream is(os.str());
-	is >> result;
-	return result;
+	if (image.data)//如果image有数据，利用它初始化circleImage和lineImage
+	{
+		circleImage = image.clone();
+		lineImage = image.clone();
+		/*if(circleImage.data)
+		doFindPositiveCircles(circleImage);
+		if(lineImage.data)
+		doFindPositiveLine(lineImage);*/
+
+		//初始化circles,必须按照此方法的执行顺序。
+		circles = Circles(image);
+		circles.getCircle();//获取圆
+		circles.getEllipse();//获取椭圆
+		circles.getCircleFromArc();
+		circles.getEllipseFromArc();
+		//		circles.getSpot();//获取污点
+		//计算circleImage和lineImage
+		circles.drawCircle(circleImage);
+		circles.drawEllipse(circleImage);
+		//		circles.drawSpot(circleImage);
+
+	}
 }
 
+/*
+* double 转 std::string
+*/
+std::string MainWindow1::doubleToString(double i)
+{
+	std::ostringstream os;
+	os << i;
+	return os.str();
+}
+
+/*
+* 显示图片
+*/
+void MainWindow1::showImage(cv::Mat& image)
+{
+	cv::cvtColor(image, image, CV_RGB2RGBA);//图像在qt显示，必须先转换
+	QImage img = QImage((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB32);
+	if (label)//原指针有对象，删除对象
+	{
+		delete label;
+		label = 0;//空指针，防止访问异常
+	}
+	label = new QLabel();
+	label->setPixmap(QPixmap::fromImage(img));
+	ui.scrollArea->setWidget(label);
+	/*设置窗口最大高度和宽度为830*480*/
+	ui.scrollArea->setMaximumHeight(480);
+	ui.scrollArea->setMaximumWidth(830);
+	ui.scrollArea->resize(label->pixmap()->size());
+}
+
+/*
+* 设置图片
+*/
+void MainWindow1::setImage(cv::Mat image)
+{
+	this->image = image;
+	init();
+}
+
+/*
+*图片预处理
+*转换灰度图和高斯模糊降噪处理
+*/
+void MainWindow1::pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage)
+{
+	cv::cvtColor(sourceImage, treatmentImage, CV_BGR2GRAY);//转换成灰度图
+	cv::GaussianBlur(treatmentImage, treatmentImage, cv::Size(5, 5), 1, 1);//高斯模糊，降噪处理
+}
+
+/*
+* 打开图片
+*/
 void MainWindow1::openImage()
 {
 	//调用系统资源管理器，打开文件。
@@ -35,30 +106,16 @@ void MainWindow1::openImage()
 	if (filePath.length() == 0) return;
 	imageFilePath = filePath;//赋值，为保存文件
 	std::string imagePath = filePath.toStdString();
-	image = cv::imread(imagePath);
-	if (!image.data) return;
-	std::clock_t start, end;
-	start = std::clock();
-	//	houghCircles(image);
-	//findContours(image);
-	end = std::clock();
-	std::string printMessage = "time consuming:" + longToString(end - start) + " ms";
-	cv::Scalar scalar(255, 122, 122);
-	cv::putText(image, printMessage, cv::Point(0, image.cols / 2), 1, 1.0, scalar, 1);
-	/*cv::namedWindow("Hough Circle", CV_WINDOW_AUTOSIZE);
-	cv::imshow("Hough Circle", image);*/
-	cv::cvtColor(image, image, CV_RGB2RGBA);//图像在qt显示，必须先转换
-	QImage img = QImage((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB32);
-	QLabel *label = new QLabel(this);
-	label->move(0, 23);
-	label->setPixmap(QPixmap::fromImage(img));
-	ui.scrollArea->setWidget(label);
-	/*设置窗口最大高度和宽度为840*480*/
-	ui.scrollArea->setMaximumHeight(480);
-	ui.scrollArea->setMaximumWidth(840);
-	ui.scrollArea->resize(label->pixmap()->size());
+	Mat imageRead = cv::imread(imagePath);
+	if (imageRead.data) {
+		setImage(imageRead);
+		showImage(image);
+	}
 }
 
+/*
+* 保存图片
+*/
 void MainWindow1::saveImage()
 {
 	if (imageFilePath.isEmpty()) return;
@@ -86,66 +143,78 @@ void MainWindow1::saveImage()
 }
 
 /*
-* 霍夫圆变换
-*/
-void MainWindow1::houghCircles(cv::Mat& image)
-{
-	cv::Mat imageGray;
-	cv::cvtColor(image, imageGray, CV_BGR2GRAY);//转换成灰度图
-	cv::GaussianBlur(imageGray, imageGray, cv::Size(9, 9), 2, 2);//高斯模糊，降噪处理
-	cv::vector<cv::Vec3f> circles;
-	cv::vector<cv::Vec3f> circles1;
-	cv::HoughCircles(imageGray, circles, CV_HOUGH_GRADIENT, 3, 10, 200, 250, 10, 200);// 霍夫圆变换
-	for (size_t i = 0; i < circles.size(); i++)
-	{
-		cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		int radius = cvRound(circles[i][2]);
-		cv::circle(image, center, 3, cv::Scalar(237, 62, 62), -1, 8, 0);//圆心
-		cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 3, 8, 0);//圆边
-	}
-	/*cv::HoughCircles(imageGray, circles1, CV_HOUGH_GRADIENT, 2.9, 300, 200, 120, 10, 100);// 霍夫圆变换
-	for (size_t i = 0; i < circles1.size(); i++)
-	{
-	cv::Point center(cvRound(circles1[i][0]), cvRound(circles1[i][1]));
-	int radius = cvRound(circles1[i][2]);
-	cv::circle(image, center, 3, cv::Scalar(237, 62, 62), -1, 8, 0);//圆心
-	cv::circle(image, center, radius, cv::Scalar(0, 0, 255), 3, 8, 0);//圆边
-	}*/
-}
-
-/*
-* 寻找轮廓
-*/
-void MainWindow1::findContours(cv::Mat& image)
-{
-	cv::Mat image_gray, detected_edges;
-	cv::cvtColor(image, image_gray, CV_BGR2GRAY);//转换成灰度图 
-	cv::blur(image_gray, image_gray, cv::Size(3, 3));//模糊降噪
-	cv::vector<cv::vector<cv::Point>> contours;
-	cv::vector<cv::Vec4i> hierarchy;
-	cv::Canny(image_gray, detected_edges, 100, 300);//用canny算子检测边缘
-	cv::findContours(detected_edges, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));//寻找轮廓
-	cv::Mat drawing = cv::Mat::zeros(detected_edges.size(), CV_8UC3);
-	for (int i = 0; i < contours.size(); i++)
-	{
-		cv::drawContours(drawing, contours, i, cv::Scalar(0, 0, 255), 2, 8, hierarchy, 0, cv::Point());
-	}
-	cv::namedWindow("Contours", CV_WINDOW_AUTOSIZE);
-	imshow("Contours", drawing);
-}
-
+ * 显示窗口
+ */
 void MainWindow1::showWindow()
 {
 	this->show();
 }
 
+double MainWindow1::distance(double x, double y)
+{
+	return x > y ? (x - y) : (y - x);
+}
+
+/*
+ * 正面按钮被点击
+ */
 void MainWindow1::positiveButtonClicked()
 {
 	this->hide();
 	emit showMainWindow();
 }
 
+/*
+ * 背面按钮被点击
+ */
 void MainWindow1::negativeButtonClicked()
 {
-	//do nothing
+	return;
+}
+
+/*
+* 检测圆 勾选事件
+*/
+void MainWindow1::checkBox1(int state)
+{
+	/* checkBox1 == 检测圆   */
+	if (state == Qt::Checked)//如果checkBox1被勾选
+	{
+		result = circleImage.clone();
+		double compatibility = 0;
+		for (int i = 0; i < circles.circ.size(); i++)
+		{
+			double temp = circles.circ[i].compatibility;
+			if (temp == 0) continue;
+			if (distance(temp, 1) < distance(compatibility, 1))
+				compatibility = temp;
+		}
+		for (int i = 0; i < circles.elli.size(); i++)
+		{
+			double temp = circles.elli[i].compatibility;
+			if (temp == 0) continue;
+			if (distance(temp, 1) < distance(compatibility, 1))
+				compatibility = temp;
+		}
+		compatibility *= 100;
+		std::string printMessage = "compatibility best: " + doubleToString(compatibility) + "%";
+		cv::Scalar scalar(0, 0, 255);
+		cv::putText(result, printMessage, cv::Point(0, result.cols - 30), 1, 1.0, scalar, 1);
+
+		/*for (int i = 0; i < circles.circleArcContour.size(); i++) {
+		if(circles.circleArcContour[i].size() > 30)
+		drawContours(result, circles.circleArcContour, i, Scalar(0, 0, 255));
+		}*/
+
+		/*for(int i = 0;i < circles.contour.size();i++)
+		{
+		drawContours(result, circles.contour, i, Scalar(0, 0, 255));
+		}*/
+	}
+	else
+	{
+		result = image.clone();
+	}
+	if (result.data)
+		showImage(result);//当数据不为空，显示图片
 }

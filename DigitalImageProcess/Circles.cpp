@@ -24,7 +24,7 @@ void Circles::init(Mat img)
 	Mat image;
 	cvtColor(img, image, CV_BGR2GRAY);//转成灰度图
 	GaussianBlur(image, image, Size(5, 5), 1, 1);//高斯模糊降噪
-	cv::Canny(image, image, 10, 40);
+	Canny(image, image, cannyLowThreshold, cannyHighThreshold);
 	this->img = image;
 }
 
@@ -842,7 +842,9 @@ void Circles::getCircle()
 			if (computeVariance(points, circon) <= 1.5f)
 			{
 				if (points.size() >= circleNumberThreshold) {
-					circon.compatibility = contourArea(contour[i])*0.5f + arcLength(contour[i], true)*0.5f;
+					//计算契合度
+					circon.compatibility = contourArea(contour[i]) / (circon.r*circon.r*3.1415926f)*0.5f
+						+ arcLength(contour[i], true) / (circon.r * 2 * 3.1415926f)*0.5f;
 					circ.push_back(circon);//将圆信息保存在circ中
 					//将圆的轮廓信息保存在circleContour中
 					circleContour.push_back(points);
@@ -881,7 +883,8 @@ void Circles::getEllipse()
 			if (varianceValue <= 1.5f)
 			{
 				if (points.size() >= ellipseNumberThreshold) {
-					ellicon.compatibility = contourArea(contour[i])*0.5f + arcLength(contour[i], true)*0.5f;
+					ellicon.compatibility = contourArea(contour[i]) / (ellicon.a*ellicon.b*3.1415926f)*0.5f
+						+ arcLength(contour[i], true) / (2 * ellicon.b*3.1415926 + 4 * (ellicon.a - ellicon.b))*0.5f;
 					elli.push_back(ellicon);//将圆信息保存在circ中
 					//将圆的轮廓信息保存在ellipseContour中
 					ellipseContour.push_back(points);
@@ -1053,6 +1056,8 @@ void Circles::getCircleFromArc()
 				circleContent circon = circleLeastFit(points);
 				if (computeVariance(points, circon) <= 1.5f)
 				{
+					//契合度无法计算
+					circon.compatibility = 0;
 					circ.push_back(circon);//将圆信息保存在circ中
 				}
 			}
@@ -1116,6 +1121,8 @@ void Circles::getEllipseFromArc()
 				ellipseContent ellicon = ellipseLeastFit(points);
 				if (computeEllipseVariance(points, ellicon) <= 1.5f)
 				{
+					//契合度无法计算
+					ellicon.compatibility = 0;
 					elli.push_back(ellicon);//将圆信息保存在circ中
 				}
 			}

@@ -44,7 +44,6 @@ public:
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *verticalLayout_2;
     QCheckBox *checkBox1;
-    QCheckBox *checkBox2;
     QMenuBar *menuBar;
     QMenu *menu;
     QStatusBar *statusBar;
@@ -224,26 +223,6 @@ public:
 
         verticalLayout_2->addWidget(checkBox1);
 
-        checkBox2 = new QCheckBox(verticalLayoutWidget_2);
-        checkBox2->setObjectName(QStringLiteral("checkBox2"));
-        checkBox2->setFont(font);
-        checkBox2->setStyleSheet(QLatin1String("QCheckBox{\n"
-"	font-size:18px;\n"
-"font-family:Microsoft YaHei UI;\n"
-"}\n"
-"QCheckBox::indicator { \n"
-"    width: 26px;\n"
-"    height: 50px;\n"
-"}\n"
-"QCheckBox::indicator::unchecked {   \n"
-"    image: url(images/unchecked.png);\n"
-"}\n"
-"QCheckBox::indicator::checked { \n"
-"    image: url(images/checked.png);\n"
-"}"));
-
-        verticalLayout_2->addWidget(checkBox2);
-
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -276,7 +255,6 @@ public:
         positiveButton->setText(QApplication::translate("MainWindowClass", "\346\255\243\351\235\242", Q_NULLPTR));
         negativeButton->setText(QApplication::translate("MainWindowClass", "\345\217\215\351\235\242", Q_NULLPTR));
         checkBox1->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\234\206", Q_NULLPTR));
-        checkBox2->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\346\216\245\350\276\271", Q_NULLPTR));
         menu->setTitle(QApplication::translate("MainWindowClass", "\346\226\207\344\273\266(File)", Q_NULLPTR));
     } // retranslateUi
 

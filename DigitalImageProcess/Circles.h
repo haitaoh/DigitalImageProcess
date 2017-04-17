@@ -40,7 +40,9 @@ typedef struct ellipseArcContent {
 class Circles
 {
 public:
-	int circleNumberThreshold = 150,
+	int cannyLowThreshold = 14,
+		cannyHighThreshold = 40,
+		circleNumberThreshold = 150,
 		ellipseNumberThreshold = 150,
 		spotNumberThreshold = 30,
 		minThreshold = 30;
