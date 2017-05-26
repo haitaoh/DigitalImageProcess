@@ -11,9 +11,14 @@ int main(int argc, char *argv[])
 	QObject::connect(&w, SIGNAL(showMainWindow1()), &q, SLOT(showWindow()));
 	QObject::connect(&q, SIGNAL(showMainWindow()), &w, SLOT(showWindow()));
 	Mat image = cv::imread("0.jpg");
-	w.setImage(image);
+	cvtColor(image, image, CV_BGR2GRAY);
+	for (int i = 0; i < 10; i++) {
+		GaussianBlur(image, image, Size(5, 5), 1, 1);
+		imshow("123456789"+i, image);
+	}
+	/*w.setImage(image);
 	w.showImage(image);
-	w.show();
+	w.show();*/
 
 	return a.exec();
 }

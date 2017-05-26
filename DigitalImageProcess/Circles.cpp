@@ -43,6 +43,8 @@ void Circles::getContours()
 
 /**
  * 拟合圆
+ * 输入：点集
+ * 输出：拟合圆
  */
 circleContent Circles::circleLeastFit(const vector<Point> points)
 {
@@ -127,6 +129,8 @@ float Circles::computeDistance(const Point point, const circleContent circ)
 
 /**
  * 拟合椭圆
+ * 输入：点集
+ * 输出：拟合椭圆
  */
 ellipseContent Circles::ellipseLeastFit(const vector<Point> points)
 {
