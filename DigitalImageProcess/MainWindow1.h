@@ -27,6 +27,7 @@ public:
 	void pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage);
 	std::string doubleToString(double i);
 	double distance(double x, double y);
+	void showCompatibility(QString str);
 
 private://申明私有变量
 	Circles circles;

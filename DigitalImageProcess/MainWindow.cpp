@@ -24,6 +24,7 @@ void MainWindow::init()
 {
 	if (image.data)//如果image有数据，利用它初始化circleImage和lineImage
 	{
+		displayImage = image.clone();
 		circleImage = image.clone();
 		lineImage = image.clone();
 		/*if(circleImage.data)
@@ -109,7 +110,7 @@ void MainWindow::openImage()
 	Mat imageRead = cv::imread(imagePath);
 	if (imageRead.data) {
 		setImage(imageRead);
-		showImage(image);
+		showImage(displayImage);
 	}
 }
 
@@ -197,9 +198,15 @@ void MainWindow::checkBox1(int state)
 				compatibility = temp;
 		}
 		compatibility *= 100;
-		std::string printMessage = "compatibility best: " + doubleToString(compatibility) + "%";
-		cv::Scalar scalar(0, 0, 255);
-		cv::putText(result, printMessage, cv::Point(0, result.cols - 30), 1, 1.0, scalar, 1);
+		QString str = QString::fromStdString(doubleToString(compatibility)) + "%";
+		showCompatibility(str);
+
+//		for(int i =0;i < circles.circleArcs.size();i++)
+//		{
+//			circleContent circ = circles.circleLeastFit(circles.circleArcs[i].points);
+//			std::cout << circ.x << "," << circ.y << " " << circ.r  << " " << circles.computeVariance(circles.circleArcs[i].points,circ)<< std::endl;
+//			std::cout.flush();
+//		}
 
 		/*for (int i = 0; i < circles.circleArcContour.size(); i++) {
 			if(circles.circleArcContour[i].size() > 30)
@@ -214,7 +221,16 @@ void MainWindow::checkBox1(int state)
 	else
 	{
 		result = image.clone();
+		showCompatibility(QString(""));
 	}
 	if (result.data)
 		showImage(result);//当数据不为空，显示图片
+}
+
+/*
+ * 显示最大契合度
+ */
+void MainWindow::showCompatibility(QString str)
+{
+	ui.label_3->setText(str);
 }

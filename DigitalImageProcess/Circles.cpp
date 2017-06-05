@@ -7,7 +7,7 @@ Circles::Circles()
 
 Circles::Circles(Mat img)
 {
-	this->src = img;
+	this->src = img.clone();
 	init(img);
 }
 

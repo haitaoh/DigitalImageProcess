@@ -54,8 +54,8 @@ public:
 		ellipseArcCandidateContour;//椭圆弧候选轮廓
 	vector<circleContent> circ;//存入圆信息
 	vector<ellipseContent> elli;//存入椭圆信息
-	vector<ellipseArcContent> ellipseArcs;//圆弧信息
-	vector<circleArcContent> circleArcs;//椭圆弧信息
+	vector<ellipseArcContent> ellipseArcs;//椭圆弧信息
+	vector<circleArcContent> circleArcs;//圆弧信息
 
 	Circles();
 	Circles(Mat img);

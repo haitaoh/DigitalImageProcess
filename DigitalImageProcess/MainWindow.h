@@ -26,11 +26,12 @@ public:
 	void setImage(cv::Mat image);
 	void pretreatmentImage(cv::Mat &sourceImage, cv::Mat &treatmentImage);
 	double distance(double x, double y);
+	void showCompatibility(QString str);
 
 private://申明私有变量
 	Circles circles;
 	Ui::MainWindowClass ui;
-	cv::Mat image, circleImage, lineImage;
+	cv::Mat image, circleImage, lineImage,displayImage;//display仅仅作为过渡，用以在qt展示中，如果用image，会导致原图像被修改
 	QString imageFilePath;
 	cv::Mat result;
 	QLabel *label;

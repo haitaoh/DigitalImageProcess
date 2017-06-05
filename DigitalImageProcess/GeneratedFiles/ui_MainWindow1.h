@@ -46,6 +46,8 @@ public:
     QVBoxLayout *verticalLayout;
     QPushButton *positiveButton;
     QPushButton *negativeButton;
+    QLabel *label_3;
+    QLabel *label_2;
     QMenuBar *menubar;
     QMenu *menu_File;
     QStatusBar *statusbar;
@@ -259,6 +261,23 @@ public:
 
         verticalLayout->addWidget(negativeButton);
 
+        label_3 = new QLabel(centralwidget);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(840, 410, 111, 31));
+        QFont font1;
+        font1.setFamily(QStringLiteral("Consolas"));
+        font1.setPointSize(12);
+        label_3->setFont(font1);
+        label_3->setStyleSheet(QLatin1String("QLabel{\n"
+"background:#fff;\n"
+"}"));
+        label_2 = new QLabel(centralwidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setGeometry(QRect(840, 380, 111, 21));
+        QFont font2;
+        font2.setFamily(QStringLiteral("Microsoft YaHei UI"));
+        font2.setPointSize(15);
+        label_2->setFont(font2);
         mainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(mainWindow);
         menubar->setObjectName(QStringLiteral("menubar"));
@@ -292,6 +311,8 @@ public:
         label->setText(QString());
         positiveButton->setText(QApplication::translate("mainWindow", "\346\255\243\351\235\242", Q_NULLPTR));
         negativeButton->setText(QApplication::translate("mainWindow", "\345\217\215\351\235\242", Q_NULLPTR));
+        label_3->setText(QString());
+        label_2->setText(QApplication::translate("mainWindow", "\346\234\200\345\244\247\345\245\221\345\220\210\345\272\246:", Q_NULLPTR));
         menu_File->setTitle(QApplication::translate("mainWindow", "\346\226\207\344\273\266(File)", Q_NULLPTR));
     } // retranslateUi
 

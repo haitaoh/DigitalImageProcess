@@ -44,6 +44,8 @@ public:
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *verticalLayout_2;
     QCheckBox *checkBox1;
+    QLabel *label_2;
+    QLabel *label_3;
     QMenuBar *menuBar;
     QMenu *menu;
     QStatusBar *statusBar;
@@ -223,6 +225,22 @@ public:
 
         verticalLayout_2->addWidget(checkBox1);
 
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setGeometry(QRect(840, 350, 111, 21));
+        QFont font1;
+        font1.setPointSize(15);
+        label_2->setFont(font1);
+        label_3 = new QLabel(centralWidget);
+        label_3->setObjectName(QStringLiteral("label_3"));
+        label_3->setGeometry(QRect(840, 380, 111, 31));
+        QFont font2;
+        font2.setFamily(QStringLiteral("Consolas"));
+        font2.setPointSize(12);
+        label_3->setFont(font2);
+        label_3->setStyleSheet(QLatin1String("QLabel{\n"
+"background:#fff;\n"
+"}"));
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -255,6 +273,8 @@ public:
         positiveButton->setText(QApplication::translate("MainWindowClass", "\346\255\243\351\235\242", Q_NULLPTR));
         negativeButton->setText(QApplication::translate("MainWindowClass", "\345\217\215\351\235\242", Q_NULLPTR));
         checkBox1->setText(QApplication::translate("MainWindowClass", "\346\243\200\346\265\213\345\234\206", Q_NULLPTR));
+        label_2->setText(QApplication::translate("MainWindowClass", "\346\234\200\345\244\247\345\245\221\345\220\210\345\272\246:", Q_NULLPTR));
+        label_3->setText(QString());
         menu->setTitle(QApplication::translate("MainWindowClass", "\346\226\207\344\273\266(File)", Q_NULLPTR));
     } // retranslateUi
 
