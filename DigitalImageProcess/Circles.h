@@ -40,12 +40,12 @@ typedef struct ellipseArcContent {
 class Circles
 {
 public:
-	int cannyLowThreshold = 14,
-		cannyHighThreshold = 40,
-		circleNumberThreshold = 150,
-		ellipseNumberThreshold = 150,
-		spotNumberThreshold = 30,
-		minThreshold = 30;
+	int cannyLowThreshold = 14,//canny低阈值
+		cannyHighThreshold = 40,//canny高阈值
+		circleNumberThreshold = 150,//用于过滤圆弧和圆的点数大小
+		ellipseNumberThreshold = 150,//用于过滤椭圆弧和椭圆的点数大小
+		spotNumberThreshold = 30,//用于过滤污点的点数大小
+		minThreshold = 30;//最小阈值
 	Mat src,//输入图像
 		img;//做预处理图像
 	vector<vector<Point>> contour, circleContour, ellipseContour, spotContour,
